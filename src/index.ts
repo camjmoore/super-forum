@@ -1,0 +1,55 @@
+import express from "express";
+import dotenv from "dotenv";
+import session from "express-session";
+import { RedisStore } from "connect-redis";
+import Redis from "ioredis";
+
+dotenv.config();
+
+const app = express();
+const router = express.Router();
+
+const redisClient = new Redis({
+  port: parseInt(process.env.REDIS_PORT),
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD
+})
+
+const redisStore  = new RedisStore({ client: redisClient })
+
+app.use(
+  session({
+    store: redisStore,
+    name: process.env.COOKIE_NAME,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialzed: false,
+    cookie: {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+)
+
+app.use(router);
+
+router.get("/", (req, res) => {
+  if (!req.session?.userid) {
+    req.session.userid = req.query.userid;
+    console.log("Userid is now set");
+    req.session.loadedCount = 0;
+  } else {
+    req.session.loadedCount = (req.session.loadedCount || 0) + 1;
+  }
+
+  res.send(
+    `userid: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
+  );
+});
+
+app.listen({ port: process.env.PORT }, () => {
+  console.log(`Server ready on port ${process.env.PORT}`);
+});
