@@ -4,8 +4,27 @@ import session from "express-session";
 import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 
-dotenv.config();
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      PORT: string;
+      REDIS_HOST: string;
+      REDIS_PORT: string;
+      REDIS_PASSWORD: string;
+      COOKIE_NAME: string;
+      SESSION_SECRET: string;
+    }
+  }
+}
 
+declare module "express-session" {
+  interface SessionData {
+    userid?: string;
+    loadedCount?: number;
+  }
+}
+
+dotenv.config();
 const app = express();
 const router = express.Router();
 
@@ -23,7 +42,7 @@ app.use(
     name: process.env.COOKIE_NAME,
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialzed: false,
+    saveUninitialized: false,
     cookie: {
       path: "/",
       httpOnly: true,
@@ -38,7 +57,7 @@ app.use(router);
 
 router.get("/", (req, res) => {
   if (!req.session?.userid) {
-    req.session.userid = req.query.userid;
+    req.session.userid = req.query.userid as string;
     console.log("Userid is now set");
     req.session.loadedCount = 0;
   } else {
