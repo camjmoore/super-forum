@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import session from "express-session";
 import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
+import dataSource from "./data-source";
 
 declare global {
   namespace NodeJS {
@@ -27,6 +28,14 @@ declare module "express-session" {
 dotenv.config();
 const app = express();
 const router = express.Router();
+
+dataSource.initialize()
+  .then(() => {
+    console.log("Data Source Inititialized!")
+  })
+  .catch((err: Error) => {
+    console.log("There was an error initializing the data source", err)
+  })
 
 const redisClient = new Redis({
   port: parseInt(process.env.REDIS_PORT),
