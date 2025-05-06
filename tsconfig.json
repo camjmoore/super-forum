@@ -3,7 +3,7 @@
     "target": "es6",
     "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
     "experimentalDecorators": true,
-    "typeRoots": [./node_modules/@types, ./src],
+    "typeRoots": ["./node_modules/@types"],
 
     /* Modules */
     "module": "NodeNext",
