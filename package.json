@@ -22,7 +22,6 @@
     "typeorm": "^0.3.22"
   },
   "devDependencies": {
-    "@types/connect-redis": "^0.0.23",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
