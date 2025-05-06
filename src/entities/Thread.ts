@@ -1,5 +1,6 @@
 import { User } from "./User";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { ThreadItem } from "./ThreadItem";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
 import { Length } from "class-validator";
 
 @Entity({ name: "Threads"})
@@ -24,5 +25,8 @@ export class Thread {
 
   @ManyToOne(() => User, (user) => user.threads)
   user: User
+
+  @OneToMany(() => ThreadItem, (threadItem) => threadItem.thread)
+  threadItems: ThreadItem[]
 }
 

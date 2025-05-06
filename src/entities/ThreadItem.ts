@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Thread } from "./Thread";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Length } from "class-validator";
 
 @Entity({ name: "ThreadItems" })
@@ -16,4 +17,6 @@ export class ThreadItem {
   @Length(10, 2500)
   body: string
 
+  @ManyToOne(() => Thread, (thread) => thread.threadItems)
+  thread: Thread
 }
