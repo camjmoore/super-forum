@@ -1,9 +1,10 @@
 import { User } from "./User";
 import { Thread } from "./Thread";
+import { Auditable } from "./Auditable";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
 @Entity({ name: "ThreadPoints"})
-export class ThreadPoint {
+export class ThreadPoint extends Auditable {
   @PrimaryGeneratedColumn({ name: "Id", type: "bigint" })
   id: string
 

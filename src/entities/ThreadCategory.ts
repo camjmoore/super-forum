@@ -1,8 +1,9 @@
 import { Thread } from "./Thread";
+import { Auditable } from "./Auditable";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 
 @Entity({ name: "ThreadCategories"})
-export default class ThreadCategory {
+export class ThreadCategory extends Auditable {
   @PrimaryGeneratedColumn({ name: "Id", type: "bigint" })
   id: string
 

@@ -1,12 +1,13 @@
 import { User } from "./User";
 import { ThreadPoint } from "./ThreadPoint";
 import { ThreadItem } from "./ThreadItem";
+import { ThreadCategory } from "./ThreadCategory";
+import { Auditable } from "./Auditable";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
 import { Length } from "class-validator";
-import ThreadCategory from "./ThreadCategory";
 
 @Entity({ name: "Threads"})
-export class Thread {
+export class Thread extends Auditable {
   @PrimaryGeneratedColumn({ name: "Id", type: "bigint" })
   id: string
 
