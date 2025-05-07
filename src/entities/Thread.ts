@@ -30,7 +30,7 @@ export class Thread {
   @OneToMany(() => ThreadItem, (threadItem) => threadItem.thread)
   threadItems: ThreadItem[]
 
-  @OneToMany(() => ThreadPoint, (threadPoints) => threadPoints.thread)
+  @OneToMany(() => ThreadPoint, (threadPoint) => threadPoint.thread)
   threadPoints: ThreadPoint[]
 }
 

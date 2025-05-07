@@ -28,7 +28,7 @@ export class User {
   @OneToMany(() => Thread, (thread) => thread.user)
   threads: Thread[]
 
-  @OneToMany(() => ThreadPoint, (threadPoints) => threadPoints.user)
+  @OneToMany(() => ThreadPoint, (threadPoint) => threadPoint.user)
   threadPoints: ThreadPoint[]
 }
 
