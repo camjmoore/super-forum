@@ -3,6 +3,7 @@ import { ThreadPoint } from "./ThreadPoint";
 import { ThreadItem } from "./ThreadItem";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
 import { Length } from "class-validator";
+import ThreadCategory from "./ThreadCategory";
 
 @Entity({ name: "Threads"})
 export class Thread {
@@ -19,7 +20,6 @@ export class Thread {
   @Length(5, 150)
   title: string
 
-
   @Column("varchar", { name: "Body", length: 2500, nullable: true })
   @Length(10, 2500)
   body: string
@@ -32,5 +32,8 @@ export class Thread {
 
   @OneToMany(() => ThreadPoint, (threadPoint) => threadPoint.thread)
   threadPoints: ThreadPoint[]
+
+  @ManyToOne(() => ThreadCategory, (threadCategory) => threadCategory.threads)
+  threadCategory: ThreadCategory
 }
 
