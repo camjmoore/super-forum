@@ -1,7 +1,6 @@
 import { User } from "./User";
 import { Thread } from "./Thread";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import { Length } from "class-validator";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
 @Entity({ name: "ThreadPoints"})
 export class ThreadPoint {
@@ -11,9 +10,9 @@ export class ThreadPoint {
   @Column("boolean", { name: "IsDecrement", default: false, nullable: false })
   isDecrement: boolean
 
-  @ManyToOne(() => User, (user) => user.threadpoints)
+  @ManyToOne(() => User, (user) => user.threadPoints)
   user: User
 
-  @ManyToOne(() => Thread, (thread) => thread.threadpoints)
+  @ManyToOne(() => Thread, (thread) => thread.threadPoints)
   thread: Thread
 }
