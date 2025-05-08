@@ -1,5 +1,5 @@
 import { User } from "./entities/User";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { isEmailValid } from "./validators/EmailValidator"
 import { isPasswordValid } from "./validators/PasswordValidator"
 
@@ -31,6 +31,20 @@ export const register = async (
     };
   }
 
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const userEntity = await User.create({
+    email: trimmedEmail,
+    username: userName,
+    password: hashedPassword,
+  }).save();
+
+  userEntity.password = "";
+
+  return {
+    user: userEntity
+  };
 }
 
 
