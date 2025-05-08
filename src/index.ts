@@ -1,9 +1,12 @@
-import express from "express";
 import dotenv from "dotenv";
+import bodyParser from "body-parser";
+import express from "express";
 import session from "express-session";
 import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 import dataSource from "./data-source";
+import { register } from "./repository/User";
+
 
 declare global {
   namespace NodeJS {
@@ -80,4 +83,26 @@ router.get("/", (req, res) => {
 
 app.listen({ port: process.env.PORT }, () => {
   console.log(`Server ready on port ${process.env.PORT}`);
+});
+
+router.post("/register", async (req, res, next) => {
+  try {
+    console.log("params", req.body);
+
+    const userResult = await register(
+      req.body.email,
+      req.body.userName,
+      req.body.password
+    );
+
+    if (userResult && userResult.user) {
+      res.send(`new user created , userId: ${userResult.user.id}`);
+    } else if (userResult && userResult.messages) {
+      res.send(userResult.messages[0]);
+    } else {
+      next();
+    }
+  } catch (ex) {
+    res.send(ex.message);
+  }
 });
