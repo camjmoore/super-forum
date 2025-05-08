@@ -5,7 +5,7 @@ import session from "express-session";
 import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 import dataSource from "./data-source";
-import { register } from "./repository/User";
+import { register } from "./repository/UserRepo";
 
 
 declare global {
