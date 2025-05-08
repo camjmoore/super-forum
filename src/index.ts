@@ -28,81 +28,89 @@ declare module "express-session" {
   }
 }
 
-dotenv.config();
-const app = express();
-const router = express.Router();
+const main = async () => {
 
-dataSource.initialize()
-  .then(() => {
-    console.log("Data Source Inititialized!")
+  dotenv.config();
+  const app = express();
+  const router = express.Router();
+
+  dataSource.initialize()
+    .then(() => {
+      console.log("Data Source Inititialized!")
+    })
+    .catch((err: Error) => {
+      console.log("There was an error initializing the data source", err)
+    })
+
+  const redisClient = new Redis({
+    port: parseInt(process.env.REDIS_PORT),
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD
   })
-  .catch((err: Error) => {
-    console.log("There was an error initializing the data source", err)
-  })
 
-const redisClient = new Redis({
-  port: parseInt(process.env.REDIS_PORT),
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASSWORD
-})
+  const redisStore  = new RedisStore({ client: redisClient })
 
-const redisStore  = new RedisStore({ client: redisClient })
+  app.use(bodyParser.json());
 
-app.use(
-  session({
-    store: redisStore,
-    name: process.env.COOKIE_NAME,
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      path: "/",
-      httpOnly: true,
-      sameSite: "strict",
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24,
-    },
-  })
-)
+  app.use(
+    session({
+      store: redisStore,
+      name: process.env.COOKIE_NAME,
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24,
+      },
+    })
+  )
 
-app.use(router);
+  app.use(router);
 
-router.get("/", (req, res) => {
-  if (!req.session?.userid) {
-    req.session.userid = req.query.userid as string;
-    console.log("Userid is now set");
-    req.session.loadedCount = 0;
-  } else {
-    req.session.loadedCount = (req.session.loadedCount || 0) + 1;
-  }
-
-  res.send(
-    `userid: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
-  );
-});
-
-app.listen({ port: process.env.PORT }, () => {
-  console.log(`Server ready on port ${process.env.PORT}`);
-});
-
-router.post("/register", async (req, res, next) => {
-  try {
-    console.log("params", req.body);
-
-    const userResult = await register(
-      req.body.email,
-      req.body.userName,
-      req.body.password
-    );
-
-    if (userResult && userResult.user) {
-      res.send(`new user created , userId: ${userResult.user.id}`);
-    } else if (userResult && userResult.messages) {
-      res.send(userResult.messages[0]);
+  router.get("/", (req, res) => {
+    if (!req.session?.userid) {
+      req.session.userid = req.query.userid as string;
+      console.log("Userid is now set");
+      req.session.loadedCount = 0;
     } else {
-      next();
+      req.session.loadedCount = (req.session.loadedCount || 0) + 1;
     }
-  } catch (ex) {
-    res.send(ex.message);
-  }
-});
+
+    res.send(
+      `userid: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
+    );
+  });
+
+  app.listen({ port: process.env.PORT }, () => {
+    console.log(`Server ready on port ${process.env.PORT}`);
+  });
+
+  router.post("/register", async (req, res, next) => {
+    try {
+      console.log("params", req.body);
+
+      const userResult = await register(
+        req.body.email,
+        req.body.userName,
+        req.body.password
+      );
+
+      if (userResult && userResult.user) {
+        res.send(`new user created , userId: ${userResult.user.id}`);
+      } else if (userResult && userResult.messages) {
+        res.send(userResult.messages[0]);
+      } else {
+        next();
+      }
+    } catch (ex) {
+      res.send(ex.message);
+    }
+  });
+
+}
+
+main();
