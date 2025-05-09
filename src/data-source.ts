@@ -11,7 +11,7 @@ const dataSource = new DataSource({
   database: process.env.PG_DATABASE,
   synchronize: process.env.PG_SYNCHRONIZE == "true",
   logging: process.env.PG_LOGGING == "true",
-  entities: ['src/entities/**/*.ts'],
+  entities: ['src/repository/entities/**/*.ts'],
   migrations: ['src/migrations/**/*.ts'],
 })
 
