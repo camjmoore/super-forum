@@ -47,5 +47,35 @@ export const register = async (
   };
 }
 
+export const login = async (
+  userName: string,
+  password: string
+): Promise<UserResult> => {
 
+  const user = await User.findOne({ where: { username: userName }, });
+
+  if (!user) {
+    return {
+      messages: [`User with username ${userName} not found`],
+    };
+  }
+
+  if (!user.confirmed) {
+    return {
+      messages: ["User has not confirmed their registration email yet."],
+    };
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user?.password);
+
+  if (!passwordMatch) {
+    return {
+      messages: ["Password is invalid."],
+    };
+  }
+
+  return {
+    user: user
+  };
+};
 
