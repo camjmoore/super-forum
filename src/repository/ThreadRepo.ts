@@ -28,7 +28,7 @@ export const createThread = async (
 
   //users must be logged in to post
   const user = await User.findOne({
-    id: userId,
+    where: { id: userId }
   });
 
   if (!user) {
@@ -38,7 +38,7 @@ export const createThread = async (
   }
 
   const category = await ThreadCategory.findOne({
-    id: categoryId
+    where: {id: categoryId}
   });
 
   if (!category) {
@@ -51,7 +51,7 @@ export const createThread = async (
     title,
     body,
     user,
-    category,
+    threadCategory: category,
   }).save();
 
   if (!thread) {
