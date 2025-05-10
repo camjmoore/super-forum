@@ -14,7 +14,7 @@ export const createThread = async (
 
   if (titleMsg) {
     return {
-      message: [titleMsg],
+      messages: [titleMsg],
     };
   }
 
@@ -22,7 +22,7 @@ export const createThread = async (
 
   if (bodyMsg) {
     return {
-      message: [bodyMsg],
+      messages: [bodyMsg],
     };
   }
 
@@ -33,7 +33,7 @@ export const createThread = async (
 
   if (!user) {
     return {
-      message: ["User not logged in."],
+      messages: ["User not logged in."],
     };
   }
 
@@ -43,7 +43,7 @@ export const createThread = async (
 
   if (!category) {
     return {
-      message: ["category not found."],
+      messages: ["category not found."],
     };
   }
 
@@ -56,11 +56,11 @@ export const createThread = async (
 
   if (!thread) {
     return {
-      message: ["Failed to create thread."]
+      messages: ["Failed to create thread."]
     };
   }
 
   return {
-    message: ["Thread created successfully."],
+    messages: ["Thread created successfully."],
   };
 };
