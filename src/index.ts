@@ -5,7 +5,7 @@ import session from "express-session";
 import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 import dataSource from "./data-source";
-import { register } from "./repository/UserRepo";
+import { register, login }  from "./repository/UserRepo";
 
 
 declare global {
@@ -111,6 +111,24 @@ const main = async () => {
     }
   });
 
+  router.post("/login", async (req, res, next) => {
+    try {
+      console.log("params", req.body);
+      const userResult = await login(req.body.userName, req.body.password);
+
+      if (userResult && userResult.user) {
+        req.session!.userid = userResult.user.id;
+        res.send(`user logged in, userId: ${req.session?.userid}`);
+      } else if (userResult && userResult.messages) {
+        res.send(userResult.messages[0]);
+      } else {
+        next();
+      }
+
+    } catch (ex) {
+      res.send(ex.message);
+    }
+  });
 }
 
 main();
