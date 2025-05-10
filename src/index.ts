@@ -6,6 +6,7 @@ import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 import dataSource from "./data-source";
 import { register, login }  from "./repository/UserRepo";
+import { createThread }  from "./repository/ThreadRepo";
 
 
 declare global {
@@ -129,6 +130,23 @@ const main = async () => {
       res.send(ex.message);
     }
   });
+
+  router.post("/createthread", async (req, res) => {
+    try {
+      console.log("userId", req.session);
+      console.log("body", req.body);
+      const msg = await createThread(
+        req.session!.userid as string,
+        req.body.categoryId,
+        req.body.title,
+        req.body.body
+      );
+      res.send(msg);
+    } catch (ex) {
+      console.log(ex)
+      res.send(ex.message)
+    }
+  })
 }
 
 main();
