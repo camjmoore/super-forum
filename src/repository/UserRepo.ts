@@ -36,7 +36,7 @@ export const register = async (
 
   const userEntity = await User.create({
     email: trimmedEmail,
-    username: userName,
+    userName: userName,
     password: hashedPassword,
   }).save();
 
@@ -52,7 +52,7 @@ export const login = async (
   password: string
 ): Promise<UserResult> => {
 
-  const user = await User.findOne({ where: { username: userName }, });
+  const user = await User.findOne({ where: {userName}, });
 
   if (!user) {
     return {

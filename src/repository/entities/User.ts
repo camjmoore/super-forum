@@ -14,7 +14,7 @@ export class User extends Auditable {
   email: string
 
   @Column("varchar", { name: "UserName", length: 60, unique: true, nullable: false })
-  username: string
+  userName: string
 
   @Column("varchar", { name: "Password", length: 100, nullable: false })
   @Length(8, 100)
