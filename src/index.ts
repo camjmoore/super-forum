@@ -5,7 +5,7 @@ import session from "express-session";
 import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 import dataSource from "./data-source";
-import { register, login }  from "./repository/UserRepo";
+import { register, login, logout }  from "./repository/UserRepo";
 import { createThread }  from "./repository/ThreadRepo";
 
 
@@ -24,7 +24,7 @@ declare global {
 
 declare module "express-session" {
   interface SessionData {
-    userid?: string;
+    userId?: string | null;
     loadedCount?: number;
   }
 }
@@ -73,16 +73,16 @@ const main = async () => {
   app.use(router);
 
   router.get("/", (req, res) => {
-    if (!req.session?.userid) {
-      req.session.userid = req.query.userid as string;
-      console.log("Userid is now set");
+    if (!req.session?.userId) {
+      req.session.userId = req.query.userid as string;
+      console.log("userId is now set");
       req.session.loadedCount = 0;
     } else {
       req.session.loadedCount = (req.session.loadedCount || 0) + 1;
     }
 
     res.send(
-      `userid: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
+      `userId: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
     );
   });
 
@@ -118,7 +118,7 @@ const main = async () => {
       const userResult = await login(req.body.userName, req.body.password);
 
       if (userResult && userResult.user) {
-        req.session!.userid = userResult.user.id;
+        req.session!.userId = userResult.user.id;
         res.send(`user logged in, userId: ${req.session?.userid}`);
       } else if (userResult && userResult.messages) {
         res.send(userResult.messages[0]);
@@ -131,12 +131,28 @@ const main = async () => {
     }
   });
 
+  router.post("/logout", async (req, res, next) => {
+    try {
+      const msg = await logout(req.body.userName);
+
+      if (msg) {
+        req.session!.userId = null;
+        res.send(msg);
+      } else {
+        next();
+      }
+
+    } catch (ex) {
+      res.send(ex.message);
+    }
+  })
+
   router.post("/createthread", async (req, res) => {
     try {
       console.log("userId", req.session);
       console.log("body", req.body);
       const msg = await createThread(
-        req.session!.userid as string,
+        req.session!.userId as string,
         req.body.categoryId,
         req.body.title,
         req.body.body
