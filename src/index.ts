@@ -6,7 +6,8 @@ import { RedisStore } from "connect-redis";
 import Redis from "ioredis";
 import dataSource from "./data-source";
 import { register, login, logout }  from "./repository/UserRepo";
-import { createThread }  from "./repository/ThreadRepo";
+import { createThread, getThreadsByCategoryId }  from "./repository/ThreadRepo";
+import { Thread } from "./repository/entities/Thread";
 
 
 declare global {
@@ -119,7 +120,7 @@ const main = async () => {
 
       if (userResult && userResult.user) {
         req.session!.userId = userResult.user.id;
-        res.send(`user logged in, userId: ${req.session?.userid}`);
+        res.send(`user logged in, userId: ${req.session?.userId}`);
       } else if (userResult && userResult.messages) {
         res.send(userResult.messages[0]);
       } else {
@@ -163,6 +164,29 @@ const main = async () => {
       res.send(ex.message)
     }
   })
+
+  router.post("/categorythreads", async (req, res ) => {
+    try {
+      const threads = await getThreadsByCategoryId(req.body.categoryId);
+
+      if (threads && threads.entities) {
+        let titles = "";
+        threads.entities.forEach((th) => {
+          titles += th.title + ", ";
+        })
+        res.send(titles);
+      }
+
+      if (threads && threads.messages) {
+        res.send(threads.messages[0]);
+      }
+
+    } catch (ex) {
+      console.log(ex)
+      res.send(ex.message);
+    }
+  });
+
 }
 
 main();
