@@ -1,7 +1,7 @@
 import { User } from "./entities/User";
 import { Thread } from "./entities/Thread";
 import { ThreadCategory } from "./entities/ThreadCategory";
-import { QueryResult } from "./QueryResult";
+import { QuerySingleResult, QueryArrayResult } from "./QueryResult";
 import { isThreadTitleValid, isThreadBodyValid } from "./validators/ThreadValidator";
 
 export const createThread = async (
@@ -9,9 +9,9 @@ export const createThread = async (
   categoryId: string,
   title: string,
   body: string
-): Promise<QueryResult<Thread>> => {
-  const titleMsg = isThreadTitleValid(title);
+): Promise<QuerySingleResult<Thread>> => {
 
+  const titleMsg = isThreadTitleValid(title);
   if (titleMsg) {
     return {
       messages: [titleMsg],
@@ -19,7 +19,6 @@ export const createThread = async (
   }
 
   const bodyMsg = isThreadBodyValid(body);
-
   if (bodyMsg) {
     return {
       messages: [bodyMsg],
@@ -30,7 +29,6 @@ export const createThread = async (
   const user = await User.findOne({
     where: { id: userId }
   });
-
   if (!user) {
     return {
       messages: ["User not logged in."],
@@ -40,7 +38,6 @@ export const createThread = async (
   const category = await ThreadCategory.findOne({
     where: {id: categoryId}
   });
-
   if (!category) {
     return {
       messages: ["category not found."],
@@ -53,7 +50,6 @@ export const createThread = async (
     user,
     threadCategory: category,
   }).save();
-
   if (!thread) {
     return {
       messages: ["Failed to create thread."]
@@ -62,5 +58,21 @@ export const createThread = async (
 
   return {
     messages: ["Thread created successfully."],
+  };
+};
+
+export const getThreadById = async (
+  id: string
+): Promise<QuerySingleResult<Thread>> => {
+
+  const thread = Thread.findOne({ where: { id }});
+  if (!thread) {
+    return {
+      messages: ["Thread not found."],
+    };
+  }
+
+  return {
+    entity: thread,
   };
 };
