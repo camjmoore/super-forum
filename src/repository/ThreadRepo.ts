@@ -66,6 +66,7 @@ export const getThreadById = async (
 ): Promise<QuerySingleResult<Thread>> => {
 
   const thread = Thread.findOne({ where: { id }});
+
   if (!thread) {
     return {
       messages: ["Thread not found."],
@@ -73,6 +74,29 @@ export const getThreadById = async (
   }
 
   return {
-    entity: thread,
+    entity: thread
   };
 };
+
+export const getThreadsByCategoryId = async (
+  categoryId: string
+): Promise<QueryArrayResult<Thread>> => {
+
+  const threads = await Thread
+    .createQueryBuilder("thread")
+    .where("thread.threadCategory = :categoryId", { categoryId })
+    .leftJoinAndSelect("thread.threadCategory", "threadCategory")
+    .orderBy("thread.createdOn", "DESC")
+    .getMany();
+
+  if (!threads) {
+    return {
+      messages: ["threads of category not found."]
+    };
+  }
+
+  console.log(threads);
+  return {
+    entities: threads
+  }
+}
