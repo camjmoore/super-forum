@@ -7,8 +7,6 @@ import Redis from "ioredis";
 import dataSource from "./data-source";
 import { register, login, logout }  from "./repository/UserRepo";
 import { createThread, getThreadsByCategoryId }  from "./repository/ThreadRepo";
-import { Thread } from "./repository/entities/Thread";
-
 
 declare global {
   namespace NodeJS {
@@ -73,6 +71,10 @@ const main = async () => {
 
   app.use(router);
 
+  app.listen({ port: process.env.PORT }, () => {
+    console.log(`Server ready on port ${process.env.PORT}`);
+  });
+
   router.get("/", (req, res) => {
     if (!req.session?.userId) {
       req.session.userId = req.query.userid as string;
@@ -85,10 +87,6 @@ const main = async () => {
     res.send(
       `userId: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
     );
-  });
-
-  app.listen({ port: process.env.PORT }, () => {
-    console.log(`Server ready on port ${process.env.PORT}`);
   });
 
   router.post("/register", async (req, res, next) => {
