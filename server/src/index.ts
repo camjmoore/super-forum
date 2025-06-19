@@ -7,6 +7,8 @@ import Redis from "ioredis";
 import dataSource from "./data-source";
 import { register, login, logout }  from "./repository/UserRepo";
 import { createThread, getThreadsByCategoryId }  from "./repository/ThreadRepo";
+import { createApolloServer } from "./apollo";
+import { expressMiddleware } from "@as-integrations/express5";
 
 declare global {
   namespace NodeJS {
@@ -30,10 +32,14 @@ declare module "express-session" {
 
 const main = async () => {
 
+  // Initialize environment variables
   dotenv.config();
+
+  // Initialize Express app
   const app = express();
   const router = express.Router();
 
+  // Initialize TypeORM Data Source
   dataSource.initialize()
     .then(() => {
       console.log("Data Source Inititialized!")
@@ -42,16 +48,21 @@ const main = async () => {
       console.log("There was an error initializing the data source", err)
     })
 
+  // Initialize Redis Client
   const redisClient = new Redis({
     port: parseInt(process.env.REDIS_PORT),
     host: process.env.REDIS_HOST,
     password: process.env.REDIS_PASSWORD
   })
 
+  // Initialize Redis Store
   const redisStore  = new RedisStore({ client: redisClient })
 
+  // Setup basic middleware
   app.use(bodyParser.json());
+  app.use(router);
 
+  // Setup session middleware 
   app.use(
     session({
       store: redisStore,
@@ -69,7 +80,22 @@ const main = async () => {
     })
   )
 
-  app.use(router);
+  // Initialize Apollo Server
+  const apolloServer = await createApolloServer();
+  apolloServer.start()
+  
+  //Setup Apollo middleware
+  app.use(
+    'graphql', 
+    expressMiddleware(apolloServer, {
+      context: async ({ req, res }) => ({
+        req,
+        res,
+        dataSource,
+        redis: redisClient,
+      }),
+    })
+  );
 
   app.listen({ port: process.env.PORT }, () => {
     console.log(`Server ready on port ${process.env.PORT}`);
