@@ -15,6 +15,10 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.12.1",
+    "@as-integrations/express5": "^1.1.0",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-tools/graphql-file-loader": "^8.0.20",
+    "@graphql-tools/load": "^8.1.0",
     "@graphql-tools/schema": "^10.0.23",
     "bcryptjs": "^3.0.2",
     "chalk": "^5.4.1",
@@ -25,12 +29,13 @@
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "graphql": "^16.11.0",
-    "graphql-tag": "^2.12.6",
     "ioredis": "^5.6.1",
     "pg": "^8.15.6",
     "typeorm": "^0.3.22"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
