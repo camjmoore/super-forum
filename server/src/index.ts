@@ -85,7 +85,7 @@ const main = async () => {
     }
 
     res.send(
-      `userId: ${req.session!.userid}, loadedcount: ${req.session!.loadedCount}`
+      `userId: ${req.session!.userId}, loadedcount: ${req.session!.loadedCount}`
     );
   });
 
