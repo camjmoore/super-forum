@@ -6,6 +6,7 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc",
+    "codegen": "graphql-codegen --config codegen.yml",
     "db:clean": "tsx scripts/cleanDb.ts",
     "db:confirmuser": "tsx scripts/confirmUser.ts",
     "db:addcategories": "tsx scripts/insertCategories.ts"
