@@ -1,6 +1,6 @@
 import { QueryResolvers } from "../resolvers-types.generated";
 
-export const Queries: QueryResolvers = {
+export const Query: QueryResolvers = {
    getThreadById: () => { throw new Error('Not Implemented')},
    getThreadsByCategoryId: () => { throw new Error('Not Implemented')},
    getThreadsLatest: () => { throw new Error('Not Implemented')},

@@ -1,6 +1,6 @@
 import { MutationResolvers } from "../resolvers-types.generated";
 
-export const Mutations: MutationResolvers = {
+export const Mutation: MutationResolvers = {
    createThread: () => { throw new Error('Not Implemented')},
    createThreadItem: () => { throw new Error('Not Implemented')},
    register: () => { throw new Error('Not Implemented')},
