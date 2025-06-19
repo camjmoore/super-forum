@@ -4,8 +4,9 @@ import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import { ApolloServer } from '@apollo/server';
 import { ApolloContext } from './types';
 import resolvers from './resolvers';
+import { GRAPHQL_SCHEMA_PATH } from './constants';
 
-const schema = loadSchemaSync('./schema.graphql', { 
+const schema = loadSchemaSync(GRAPHQL_SCHEMA_PATH, { 
   loaders: [new GraphQLFileLoader()] 
 });
 
