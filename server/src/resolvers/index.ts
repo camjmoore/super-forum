@@ -1,10 +1,9 @@
 import { ApolloContext } from "../types";
 import { Resolvers } from "../resolvers-types.generated";
+import { Queries } from "./queryResolvers";
 
  const resolvers: Resolvers<ApolloContext> = {
-    Query: {
-        hello: () => "Hello World"
-    }
+    Queries
  }
 
  export default resolvers;
