@@ -82,7 +82,7 @@ const main = async () => {
 
   // Initialize Apollo Server
   const apolloServer = await createApolloServer();
-  apolloServer.start()
+  await apolloServer.start()
   
   //Setup Apollo middleware
   app.use(
