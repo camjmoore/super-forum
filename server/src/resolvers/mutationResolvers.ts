@@ -1,7 +1,7 @@
 import { ApolloContext } from "../types";
 import { Thread, EntityResult, MutationResolvers } from "../resolvers-types.generated";
 import { register, login, logout }  from "./repository/UserRepo";
-import { createThread, getThreadsByCategoryId }  from "..ThreadRepo/repository/ThreadRepo";
+import { createThread, getThreadsByCategoryId }  from "../repository/ThreadRepo";
 import { QuerySingleResult, QueryArrayResult } from "../repository/QueryResult";
 import { 
    UserResult,
@@ -22,6 +22,7 @@ export const Mutation: MutationResolvers = {
          result = await createThread(args.userId, args.categoryId, args.title, args.body);
 
          return {
+            __typename: 'EntityResult',
             messages: result.messages
                ? result.messages
                : ["An error has occurred"],
