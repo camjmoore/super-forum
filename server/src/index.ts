@@ -58,9 +58,9 @@ const main = async () => {
   // Initialize Redis Store
   const redisStore  = new RedisStore({ client: redisClient })
 
-  // Setup basic middleware
+  // Setup parser middleware
   app.use(bodyParser.json());
-  app.use(router);
+  
 
   // Setup session middleware 
   app.use(
@@ -80,13 +80,16 @@ const main = async () => {
     })
   )
 
+  // Setup router middleware
+  app.use(router);
+
   // Initialize Apollo Server
   const apolloServer = await createApolloServer();
   await apolloServer.start()
   
   //Setup Apollo middleware
   app.use(
-    'graphql', 
+    '/graphql', 
     expressMiddleware(apolloServer, {
       context: async ({ req, res }) => ({
         req,
@@ -103,7 +106,7 @@ const main = async () => {
 
   router.get("/", (req, res) => {
     if (!req.session?.userId) {
-      req.session.userId = req.query.userid as string;
+      req.session.userId = req.query.userId as string;
       console.log("userId is now set");
       req.session.loadedCount = 0;
     } else {
