@@ -65,7 +65,7 @@ export const getThreadById = async (
   id: string
 ): Promise<QuerySingleResult<Thread>> => {
 
-  const thread = Thread.findOne({ where: { id }});
+  const thread = await Thread.findOne({ where: { id }});
 
   if (!thread) {
     return {
