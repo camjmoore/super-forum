@@ -129,9 +129,9 @@ export type Thread = {
   isDisabled: Scalars['Boolean']['output'];
   lastModifiedBy: Scalars['String']['output'];
   lastModifiedOn: Scalars['Date']['output'];
+  points: Scalars['Int']['output'];
   threadCategory: ThreadCategory;
   threadItems?: Maybe<Array<ThreadItem>>;
-  threadPoints: Scalars['Int']['output'];
   title: Scalars['String']['output'];
   user: User;
   views: Scalars['Int']['output'];
@@ -165,8 +165,8 @@ export type ThreadItem = {
   isDisabled: Scalars['Boolean']['output'];
   lastModifiedBy: Scalars['String']['output'];
   lastModifiedOn: Scalars['Date']['output'];
+  points: Scalars['Int']['output'];
   thread: Thread;
-  threadItemPoints: Scalars['Int']['output'];
   user: User;
   views: Scalars['Int']['output'];
 };
@@ -401,9 +401,9 @@ export type ThreadResolvers<ContextType = ApolloContext, ParentType extends Reso
   isDisabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastModifiedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastModifiedOn?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  points?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   threadCategory?: Resolver<ResolversTypes['ThreadCategory'], ParentType, ContextType>;
   threadItems?: Resolver<Maybe<Array<ResolversTypes['ThreadItem']>>, ParentType, ContextType>;
-  threadPoints?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   views?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -439,8 +439,8 @@ export type ThreadItemResolvers<ContextType = ApolloContext, ParentType extends 
   isDisabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastModifiedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastModifiedOn?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  points?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   thread?: Resolver<ResolversTypes['Thread'], ParentType, ContextType>;
-  threadItemPoints?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   views?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
