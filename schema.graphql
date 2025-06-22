@@ -23,7 +23,7 @@ union UserResult = User | EntityResult
 type Thread {
   id: ID!
   views: Int!
-  threadPoints: Int!
+  points: Int!
   isDisabled: Boolean!
   title: String!
   body: String!
@@ -44,7 +44,7 @@ union ThreadArrayResult = ThreadArray | EntityResult
 type ThreadItem {
   id: ID!
   views: Int!
-  threadItemPoints: Int!
+  points: Int!
   isDisabled: Boolean!
   body: String!
   user: User!
