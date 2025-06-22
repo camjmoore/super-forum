@@ -1,6 +1,7 @@
-import { ThreadPoint } from "./ThreadPoint";
-import { ThreadItemPoint } from "./ThreadItemPoint";
 import { Thread } from "./Thread";
+import { ThreadPoint } from "./ThreadPoint";
+import { ThreadItem } from "./ThreadItem";
+import { ThreadItemPoint } from "./ThreadItemPoint";
 import { Auditable } from "./Auditable";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Length } from "class-validator";
@@ -32,6 +33,9 @@ export class User extends Auditable {
 
   @OneToMany(() => ThreadPoint, (threadPoint) => threadPoint.user)
   threadPoints: ThreadPoint[]
+
+  @OneToMany(() => ThreadItem, (threadItem) => threadItem.user)
+  threadItems: ThreadItem[]
 
   @OneToMany(() => ThreadItemPoint, (threadItemPoint) => threadItemPoint.user)
   threadItemPoints: ThreadItemPoint[]
