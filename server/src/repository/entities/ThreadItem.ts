@@ -26,6 +26,6 @@ export class ThreadItem extends Auditable {
   @ManyToOne(() => Thread, (thread) => thread.threadItems)
   thread: Thread
 
-  @OneToMany(() => ThreadItemPoint, (threadItemPoint) => threadItemPoint.user)
+  @OneToMany(() => ThreadItemPoint, (threadItemPoint) => threadItemPoint.threadItem)
   threadItemPoints: ThreadItemPoint[]
 }
