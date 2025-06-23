@@ -9,7 +9,8 @@
     "codegen": "graphql-codegen --config codegen.yml",
     "db:clean": "tsx scripts/cleanDb.ts",
     "db:confirmuser": "tsx scripts/confirmUser.ts",
-    "db:addcategories": "tsx scripts/insertCategories.ts"
+    "db:addcategories": "tsx scripts/insertCategories.ts",
+    "db:seed": "tsx scripts/robustSeed.ts"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
   "dependencies": {
     "@apollo/server": "^4.12.1",
     "@as-integrations/express5": "^1.1.0",
+    "@faker-js/faker": "^9.8.0",
     "@graphql-codegen/typescript": "^4.1.6",
     "@graphql-tools/graphql-file-loader": "^8.0.20",
     "@graphql-tools/load": "^8.1.0",
