@@ -96,7 +96,7 @@ export type MutationUpdateThreadPointArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getAllCategories?: Maybe<Array<ThreadCategory>>;
+  getAllCategories: ThreadCategoryArray;
   getThreadById?: Maybe<ThreadResult>;
   getThreadItemByThreadId: ThreadItemArrayResult;
   getThreadsByCategoryId: ThreadArrayResult;
@@ -154,6 +154,11 @@ export type ThreadCategory = {
   lastModifiedOn: Scalars['Date']['output'];
   name: Scalars['String']['output'];
   threads: Array<Thread>;
+};
+
+export type ThreadCategoryArray = {
+  __typename?: 'ThreadCategoryArray';
+  threadCategories?: Maybe<Array<ThreadCategory>>;
 };
 
 export type ThreadItem = {
@@ -317,6 +322,7 @@ export type ResolversTypes = ResolversObject<{
   ThreadArray: ResolverTypeWrapper<ThreadArray>;
   ThreadArrayResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['ThreadArrayResult']>;
   ThreadCategory: ResolverTypeWrapper<ThreadCategory>;
+  ThreadCategoryArray: ResolverTypeWrapper<ThreadCategoryArray>;
   ThreadItem: ResolverTypeWrapper<ThreadItem>;
   ThreadItemArray: ResolverTypeWrapper<ThreadItemArray>;
   ThreadItemArrayResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['ThreadItemArrayResult']>;
@@ -343,6 +349,7 @@ export type ResolversParentTypes = ResolversObject<{
   ThreadArray: ThreadArray;
   ThreadArrayResult: ResolversUnionTypes<ResolversParentTypes>['ThreadArrayResult'];
   ThreadCategory: ThreadCategory;
+  ThreadCategoryArray: ThreadCategoryArray;
   ThreadItem: ThreadItem;
   ThreadItemArray: ThreadItemArray;
   ThreadItemArrayResult: ResolversUnionTypes<ResolversParentTypes>['ThreadItemArrayResult'];
@@ -384,7 +391,7 @@ export type MutationResolvers<ContextType = ApolloContext, ParentType extends Re
 }>;
 
 export type QueryResolvers<ContextType = ApolloContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  getAllCategories?: Resolver<Maybe<Array<ResolversTypes['ThreadCategory']>>, ParentType, ContextType>;
+  getAllCategories?: Resolver<ResolversTypes['ThreadCategoryArray'], ParentType, ContextType>;
   getThreadById?: Resolver<Maybe<ResolversTypes['ThreadResult']>, ParentType, ContextType, RequireFields<QueryGetThreadByIdArgs, 'id'>>;
   getThreadItemByThreadId?: Resolver<ResolversTypes['ThreadItemArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadItemByThreadIdArgs, 'threadId'>>;
   getThreadsByCategoryId?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadsByCategoryIdArgs, 'categoryId'>>;
@@ -428,6 +435,11 @@ export type ThreadCategoryResolvers<ContextType = ApolloContext, ParentType exte
   lastModifiedOn?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   threads?: Resolver<Array<ResolversTypes['Thread']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ThreadCategoryArrayResolvers<ContextType = ApolloContext, ParentType extends ResolversParentTypes['ThreadCategoryArray'] = ResolversParentTypes['ThreadCategoryArray']> = ResolversObject<{
+  threadCategories?: Resolver<Maybe<Array<ResolversTypes['ThreadCategory']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -517,6 +529,7 @@ export type Resolvers<ContextType = ApolloContext> = ResolversObject<{
   ThreadArray?: ThreadArrayResolvers<ContextType>;
   ThreadArrayResult?: ThreadArrayResultResolvers<ContextType>;
   ThreadCategory?: ThreadCategoryResolvers<ContextType>;
+  ThreadCategoryArray?: ThreadCategoryArrayResolvers<ContextType>;
   ThreadItem?: ThreadItemResolvers<ContextType>;
   ThreadItemArray?: ThreadItemArrayResolvers<ContextType>;
   ThreadItemArrayResult?: ThreadItemArrayResultResolvers<ContextType>;
