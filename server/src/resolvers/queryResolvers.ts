@@ -1,5 +1,5 @@
 import { QueryResolvers, ThreadResult, ThreadArrayResult } from "../resolvers-types.generated";
-import { getThreadById, getThreadsByCategoryId } from "../repository/ThreadRepo";
+import { getThreadById, getThreadsByCategoryId, getThreadsLatest } from "../repository/ThreadRepo";
 
 
 export const Query: QueryResolvers = {
@@ -33,7 +33,22 @@ export const Query: QueryResolvers = {
          messages
       }
    },
-   getThreadsLatest: () => { throw new Error('Not Implemented')},
+   getThreadsLatest: async (): Promise<ThreadArrayResult> => {
+      const { entities, messages } = await getThreadsLatest();
+
+      if (entities) {
+         return {
+            __typename: 'ThreadArray',
+            threads: [...entities]
+         };
+      }
+
+      return {
+         __typename: 'EntityResult',
+         messages
+      }
+
+   },
    getThreadItemByThreadId: () => { throw new Error('Not Implemented')},
    getAllCategories: () => { throw new Error('Not Implemented')},
    me: () => { throw new Error('Not Implemented')},

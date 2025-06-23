@@ -100,3 +100,26 @@ export const getThreadsByCategoryId = async (
     entities: threads
   }
 }
+
+export const getThreadsLatest = async (): Promise<QueryArrayResult<Thread>> => {
+  const startDate = new Date();
+  startDate.setHours(startDate.getHours() - 24);
+  //get threads within last 24 hours
+
+  const threads = await Thread
+    .createQueryBuilder("thread")
+    .leftJoinAndSelect("thread.threadCategory", "threadCategory")
+    .where("thread.createdOn >= :startDate", { startDate })
+    .orderBy("thread.createdOn", "DESC")
+    .getMany();
+
+    if (!threads || threads.length === 0) {
+    return {
+      messages: ["No Recent threads"]
+    };
+  }
+
+  return {
+    entities: threads
+  };
+}
