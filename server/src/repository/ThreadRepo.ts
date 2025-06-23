@@ -3,6 +3,8 @@ import { Thread } from "./entities/Thread";
 import { ThreadCategory } from "./entities/ThreadCategory";
 import { QuerySingleResult, QueryArrayResult } from "./QueryResult";
 import { isThreadTitleValid, isThreadBodyValid } from "./validators/ThreadValidator";
+import { ThreadItem } from "./entities/ThreadItem";
+import { warn } from "console";
 
 export const createThread = async (
   userId: string,
@@ -122,4 +124,36 @@ export const getThreadsLatest = async (): Promise<QueryArrayResult<Thread>> => {
   return {
     entities: threads
   };
+}
+
+export const getThreadItemByThreadId = async (
+  id: string
+): Promise<QueryArrayResult<ThreadItem>> => {
+  const threadItems = await ThreadItem
+    .createQueryBuilder("threadItem")
+    .leftJoinAndSelect("threadItem.user", "user")
+    .leftJoinAndSelect("threadItem.thread", "thread")
+    .where("thread.id = :threadId", { threadId: id })
+    .orderBy("threadItem.createdOn", "ASC")
+    .getMany();
+
+  if(!threadItems || threadItems.length === 0) {
+    return {
+      messages: [`Thread with id ${id} not found.`]
+    }
+  }
+
+  return {
+    entities: threadItems
+  };
+}
+
+export const getAllCategories = async (): Promise<QueryArrayResult<ThreadCategory>> => {
+  const threadCategories = await ThreadCategory.find({
+    order: { name: "ASC" }
+  });
+
+  return {
+    entities: threadCategories
+  }
 }

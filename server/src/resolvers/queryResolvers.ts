@@ -1,5 +1,5 @@
-import { QueryResolvers, ThreadResult, ThreadArrayResult } from "../resolvers-types.generated";
-import { getThreadById, getThreadsByCategoryId, getThreadsLatest } from "../repository/ThreadRepo";
+import { QueryResolvers, ThreadResult, ThreadArrayResult, ThreadItemArrayResult, ThreadCategoryArray } from "../resolvers-types.generated";
+import { getThreadById, getThreadsByCategoryId, getThreadsLatest, getThreadItemByThreadId, getAllCategories } from "../repository/ThreadRepo";
 
 
 export const Query: QueryResolvers = {
@@ -49,9 +49,34 @@ export const Query: QueryResolvers = {
       }
 
    },
-   getThreadItemByThreadId: () => { throw new Error('Not Implemented')},
-   getAllCategories: () => { throw new Error('Not Implemented')},
+   getThreadItemByThreadId: async (_, { threadId }): Promise<ThreadItemArrayResult> => {
+      const { entities, messages } = await getThreadItemByThreadId(threadId);
+
+      if (entities) {
+         return {
+            __typename: 'ThreadItemArray',
+            threadItems: [...entities]
+         }
+      }
+
+      return {
+         __typename: 'EntityResult',
+         messages
+      }
+
+   },
+   getAllCategories: async (): Promise<ThreadCategoryArray> => {
+      const { entities } = await getAllCategories()
+
+      return {
+         __typename: 'ThreadCategoryArray',
+         threadCategories: [...(entities || [])]
+      }
+
+   },
    me: () => { throw new Error('Not Implemented')},
    getTopCategoryThread: () => { throw new Error('Not Implemented')},
 
 }
+
+
