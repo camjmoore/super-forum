@@ -24,7 +24,7 @@ export const Query: QueryResolvers = {
       if (entities) {
          return {
             __typename: 'ThreadArray',
-            ...entities
+            threads: [...entities],
          };
       }
 
