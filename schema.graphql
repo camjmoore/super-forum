@@ -70,6 +70,9 @@ type ThreadCategory {
   lastModifiedBy: String!
   lastModifiedOn: Date!
 }
+type ThreadCategoryArray {
+  threadCategories: [ThreadCategory!]
+}
 
 type ThreadPoint {
   id: ID!
@@ -106,7 +109,7 @@ type Query {
     getThreadsByCategoryId(categoryId: ID!): ThreadArrayResult!
     getThreadsLatest: ThreadArrayResult!
     getThreadItemByThreadId(threadId: ID!): ThreadItemArrayResult!
-  getAllCategories: [ThreadCategory!]
+  getAllCategories: ThreadCategoryArray!
   me: UserResult!
   getTopCategoryThread: [CategoryThread!]
 }
