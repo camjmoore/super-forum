@@ -1,4 +1,4 @@
-import { DataSource } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -12,7 +12,7 @@ const dataSource = new DataSource({
   synchronize: process.env.PG_SYNCHRONIZE == "true",
   logging: process.env.PG_LOGGING == "true",
   entities: ['src/repository/entities/**/*.ts'],
-  migrations: ['src/migrations/**/*.ts'],
-})
+  migrations: ['src/migrations/**/*.ts']
+} as DataSourceOptions)
 
 export default dataSource
