@@ -4,7 +4,6 @@ import { ThreadCategory } from "./entities/ThreadCategory";
 import { QuerySingleResult, QueryArrayResult } from "./QueryResult";
 import { isThreadTitleValid, isThreadBodyValid } from "./validators/ThreadValidator";
 import { ThreadItem } from "./entities/ThreadItem";
-import { warn } from "console";
 
 export const createThread = async (
   userId: string,
@@ -125,6 +124,7 @@ export const getThreadsLatest = async (): Promise<QueryArrayResult<Thread>> => {
     entities: threads
   };
 }
+//thread item functions should be slpit into a new repo file: ThreadItemRepo
 
 export const getThreadItemByThreadId = async (
   id: string
