@@ -22,7 +22,9 @@ export type Repositories = {
     categoryId: string
   ) => Promise<QueryArrayResult<Thread>>,
   getThreadsLatest: () => Promise<QueryArrayResult<Thread>>,
-  getThreadItemByThreadId: () => Promise<QueryArrayResult<ThreadItem>>,
+  getThreadItemByThreadId: (
+    id: string
+  ) => Promise<QueryArrayResult<ThreadItem>>,
   getAllCategories: () => Promise<QueryArrayResult<ThreadCategory>>,
 
   // UserRepo exports
