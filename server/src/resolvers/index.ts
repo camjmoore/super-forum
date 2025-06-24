@@ -1,5 +1,5 @@
-import { ApolloContext } from "../types";
-import { Resolvers } from "../resolvers-types.generated";
+import { ApolloContext } from "../types/IApolloContext";
+import { Resolvers } from "../types/resolvers-types.generated";
 import { Query } from "./queryResolvers";
 import { Mutation } from "./mutationResolvers";
 
