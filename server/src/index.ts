@@ -7,6 +7,7 @@ import Redis from "ioredis";
 import dataSource from "./data-source";
 import { register, login, logout }  from "./repository/UserRepo";
 import { createThread, getThreadsByCategoryId }  from "./repository/ThreadRepo";
+import { repository } from './repository';
 import { createApolloServer } from "./apollo";
 import { expressMiddleware } from "@as-integrations/express5";
 
@@ -96,6 +97,7 @@ const main = async () => {
         res,
         dataSource,
         redis: redisClient,
+        repository
       }),
     })
   );
