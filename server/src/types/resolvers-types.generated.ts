@@ -39,7 +39,7 @@ export type Mutation = {
   createThreadItem?: Maybe<EntityResult>;
   login: Scalars['String']['output'];
   logout: Scalars['String']['output'];
-  register: Scalars['String']['output'];
+  register: UserResult;
   updateThreadItemPoint: Scalars['String']['output'];
   updateThreadPoint: Scalars['String']['output'];
 };
@@ -385,7 +385,7 @@ export type MutationResolvers<ContextType = ApolloContext, ParentType extends Re
   createThreadItem?: Resolver<Maybe<ResolversTypes['EntityResult']>, ParentType, ContextType, RequireFields<MutationCreateThreadItemArgs, 'threadId' | 'userId'>>;
   login?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'userName'>>;
   logout?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLogoutArgs, 'userName'>>;
-  register?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'email' | 'password' | 'userName'>>;
+  register?: Resolver<ResolversTypes['UserResult'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'email' | 'password' | 'userName'>>;
   updateThreadItemPoint?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationUpdateThreadItemPointArgs, 'increment' | 'threadItemId'>>;
   updateThreadPoint?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationUpdateThreadPointArgs, 'increment' | 'threadId'>>;
 }>;
