@@ -107,7 +107,7 @@ export type Query = {
 
 
 export type QueryGetThreadByIdArgs = {
-  id: Scalars['ID']['input'];
+  threadId: Scalars['ID']['input'];
 };
 
 
@@ -392,7 +392,7 @@ export type MutationResolvers<ContextType = ApolloContext, ParentType extends Re
 
 export type QueryResolvers<ContextType = ApolloContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAllCategories?: Resolver<ResolversTypes['ThreadCategoryArray'], ParentType, ContextType>;
-  getThreadById?: Resolver<Maybe<ResolversTypes['ThreadResult']>, ParentType, ContextType, RequireFields<QueryGetThreadByIdArgs, 'id'>>;
+  getThreadById?: Resolver<Maybe<ResolversTypes['ThreadResult']>, ParentType, ContextType, RequireFields<QueryGetThreadByIdArgs, 'threadId'>>;
   getThreadItemByThreadId?: Resolver<ResolversTypes['ThreadItemArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadItemByThreadIdArgs, 'threadId'>>;
   getThreadsByCategoryId?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadsByCategoryIdArgs, 'categoryId'>>;
   getThreadsLatest?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType>;
