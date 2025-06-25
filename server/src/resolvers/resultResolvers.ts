@@ -4,7 +4,7 @@ import {
   ThreadArrayResultResolvers,
   ThreadItemResultResolvers,
   ThreadItemArrayResultResolvers,
-} from "../resolvers-types.generated";
+} from "../types/resolvers-types.generated";
 
 export const UserResult: UserResultResolvers = {
    __resolveType(obj: any) {
