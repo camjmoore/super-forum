@@ -1,10 +1,8 @@
-import { QueryResolvers, ThreadResult, ThreadArrayResult, ThreadItemArrayResult, ThreadCategoryArray } from "../resolvers-types.generated";
-import { getThreadById, getThreadsByCategoryId, getThreadsLatest, getThreadItemByThreadId, getAllCategories } from "../repository/ThreadRepo";
-
+import { QueryResolvers, ThreadResult, ThreadArrayResult, ThreadItemArrayResult, ThreadCategoryArray } from "../types/resolvers-types.generated";
 
 export const Query: QueryResolvers = {
-   getThreadById: async (_, { id }): Promise<ThreadResult> => {
-      const { entity, messages } = await getThreadById(id)
+   getThreadById: async (_, { threadId }, { repository: { getThreadById } }): Promise<ThreadResult> => {
+      const { entity, messages } = await getThreadById(threadId)
 
       if (entity) {
          return {
@@ -18,7 +16,7 @@ export const Query: QueryResolvers = {
          messages
       }
    },
-   getThreadsByCategoryId: async (_, { categoryId }): Promise<ThreadArrayResult> => {
+   getThreadsByCategoryId: async (_, { categoryId }, { repository: { getThreadsByCategoryId } }): Promise<ThreadArrayResult> => {
       const { entities, messages }  = await getThreadsByCategoryId(categoryId);
 
       if (entities) {
@@ -33,7 +31,7 @@ export const Query: QueryResolvers = {
          messages
       }
    },
-   getThreadsLatest: async (): Promise<ThreadArrayResult> => {
+   getThreadsLatest: async (_, __, { repository: { getThreadsLatest } }): Promise<ThreadArrayResult> => {
       const { entities, messages } = await getThreadsLatest();
 
       if (entities) {
@@ -47,9 +45,8 @@ export const Query: QueryResolvers = {
          __typename: 'EntityResult',
          messages
       }
-
    },
-   getThreadItemByThreadId: async (_, { threadId }): Promise<ThreadItemArrayResult> => {
+   getThreadItemByThreadId: async (_, { threadId }, { repository: { getThreadItemByThreadId } }): Promise<ThreadItemArrayResult> => {
       const { entities, messages } = await getThreadItemByThreadId(threadId);
 
       if (entities) {
@@ -63,16 +60,14 @@ export const Query: QueryResolvers = {
          __typename: 'EntityResult',
          messages
       }
-
    },
-   getAllCategories: async (): Promise<ThreadCategoryArray> => {
+   getAllCategories: async (_, __, { repository: { getAllCategories } }): Promise<ThreadCategoryArray> => {
       const { entities } = await getAllCategories()
 
       return {
          __typename: 'ThreadCategoryArray',
          threadCategories: [...(entities || [])]
       }
-
    },
    me: () => { throw new Error('Not Implemented')},
    getTopCategoryThread: () => { throw new Error('Not Implemented')},

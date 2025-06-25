@@ -1,6 +1,5 @@
-import { Thread, EntityResult, MutationResolvers } from "../resolvers-types.generated";
+import { Thread, EntityResult, MutationResolvers } from "../types/resolvers-types.generated";
 import { register, login, logout }  from "../repository/UserRepo";
-import { createThread, getThreadsByCategoryId }  from "../repository/ThreadRepo";
 import { QuerySingleResult, QueryArrayResult } from "../repository/QueryResult";
 import { 
    UserResult,
@@ -13,7 +12,7 @@ import {
 export const Mutation: MutationResolvers = {
    // ts convention to underscore unused args
    // graphql convention to omit remaining unused args
-   createThread: async (_, { userId, categoryId, title, body }): Promise<EntityResult> => {
+   createThread: async (_, { userId, categoryId, title, body }, { repository: { createThread }}): Promise<EntityResult> => {
       const { messages } = await createThread(userId, categoryId, title, body);
       return {
          __typename: 'EntityResult',
