@@ -1,7 +1,7 @@
 import { User } from "./entities/User";
 import bcrypt from "bcryptjs";
-import { isEmailValid } from "./validators/EmailValidator"
-import { isPasswordValid } from "./validators/PasswordValidator"
+import { isEmailValid } from "./validators/EmailValidator";
+import { isPasswordValid } from "./validators/PasswordValidator";
 
 const saltRounds = 10;
 
@@ -43,16 +43,15 @@ export const register = async (
   userEntity.password = "";
 
   return {
-    user: userEntity
+    user: userEntity,
   };
-}
+};
 
 export const login = async (
   userName: string,
   password: string
 ): Promise<UserResult> => {
-
-  const user = await User.findOne({ where: {userName}, });
+  const user = await User.findOne({ where: { userName } });
 
   if (!user) {
     return {
@@ -75,21 +74,34 @@ export const login = async (
   }
 
   return {
-    user: user
+    user: user,
   };
-
 };
 
-export const logout = async (userName: string): Promise<string> => {
-
+export const logout = async (userName: string): Promise<Array<string>> => {
   const user = User.findOne({
-    where: { userName }
-  })
+    where: { userName },
+  });
 
   if (!user) {
-    return `User with userName ${userName} could not be found`
+    return [`User with userName ${userName} could not be found.`];
   }
 
-  return "User logged out."
+  return ["User logged out."];
 };
 
+export const getUserById = async (id: string): Promise<UserResult> => {
+  const user = await User.findOne({ where: { id } });
+
+  if (!user) {
+    return {
+      messages: [`User with id ${id} not found`],
+    };
+  }
+
+  user.password = "";
+
+  return {
+    user: user,
+  };
+};

@@ -1,6 +1,13 @@
-import { createThread, getThreadById, getThreadsByCategoryId, getThreadsLatest, getThreadItemByThreadId, getAllCategories } from './ThreadRepo';
-import { register, login, logout } from './UserRepo';
-import type { Repositories } from '../types/repository-types';
+import {
+  createThread,
+  getThreadById,
+  getThreadsByCategoryId,
+  getThreadsLatest,
+  getThreadItemByThreadId,
+  getAllCategories,
+} from "./ThreadRepo";
+import { register, login, logout, getUserById } from "./UserRepo";
+import type { Repositories } from "../types/repository-types";
 
 export const repository: Repositories = {
   createThread,
@@ -12,4 +19,5 @@ export const repository: Repositories = {
   register,
   login,
   logout,
+  getUserById,
 };

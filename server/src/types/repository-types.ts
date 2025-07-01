@@ -4,7 +4,7 @@ import { Thread } from "../repository/entities/Thread";
 import { ThreadItem } from "../repository/entities/ThreadItem";
 //import { ThreadItemPoint } from "../repository/entities/ThreadItemPoint";
 import { ThreadCategory } from "../repository/entities/ThreadCategory";
-import { QuerySingleResult, QueryArrayResult } from '../repository/QueryResult';
+import { QuerySingleResult, QueryArrayResult } from "../repository/QueryResult";
 import { UserResult } from "../repository/UserRepo";
 
 export type Repositories = {
@@ -14,30 +14,25 @@ export type Repositories = {
     categoryId: string,
     title: string,
     body: string
-  ) => Promise<{ messages?: string[] }>,
-  getThreadById: (
-    id: string
-  ) => Promise<QuerySingleResult<Thread>>,
+  ) => Promise<{ messages?: string[] }>;
+  getThreadById: (id: string) => Promise<QuerySingleResult<Thread>>;
   getThreadsByCategoryId: (
     categoryId: string
-  ) => Promise<QueryArrayResult<Thread>>,
-  getThreadsLatest: () => Promise<QueryArrayResult<Thread>>,
+  ) => Promise<QueryArrayResult<Thread>>;
+  getThreadsLatest: () => Promise<QueryArrayResult<Thread>>;
   getThreadItemByThreadId: (
     id: string
-  ) => Promise<QueryArrayResult<ThreadItem>>,
-  getAllCategories: () => Promise<QueryArrayResult<ThreadCategory>>,
+  ) => Promise<QueryArrayResult<ThreadItem>>;
+  getAllCategories: () => Promise<QueryArrayResult<ThreadCategory>>;
 
   // UserRepo exports
   register: (
     email: string,
     userName: string,
     password: string
-  ) => Promise<UserResult>,
-  login: (
-    userName: string,
-    password: string
-  ) => Promise<UserResult>,
-  logout: (
-    userName: string
-  ) => Promise<string>,
+  ) => Promise<UserResult>;
+  login: (userName: string, password: string) => Promise<UserResult>;
+  logout: (userName: string) => Promise<Array<string>>;
+  getUserById: (id: string) => Promise<UserResult>;
+  //getUserByUserName: (userName: string) => Promise<UserResult>;
 };
