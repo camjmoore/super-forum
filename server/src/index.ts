@@ -1,15 +1,15 @@
-import dotenv from "dotenv";
-import bodyParser from "body-parser";
-import express from "express";
-import session from "express-session";
-import { RedisStore } from "connect-redis";
-import Redis from "ioredis";
-import dataSource from "./data-source";
-import { register, login, logout }  from "./repository/UserRepo";
-import { createThread, getThreadsByCategoryId }  from "./repository/ThreadRepo";
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import express from 'express';
+import session from 'express-session';
+import { RedisStore } from 'connect-redis';
+import Redis from 'ioredis';
+import dataSource from './data-source';
+import { register, login, logout } from './repository/UserRepo';
+import { createThread, getThreadsByCategoryId } from './repository/ThreadRepo';
 import { repository } from './repository';
-import { createApolloServer } from "./apollo";
-import { expressMiddleware } from "@as-integrations/express5";
+import { createApolloServer } from './apollo';
+import { expressMiddleware } from '@as-integrations/express5';
 
 declare global {
   namespace NodeJS {
@@ -24,7 +24,7 @@ declare global {
   }
 }
 
-declare module "express-session" {
+declare module 'express-session' {
   interface SessionData {
     userId?: string | null;
     loadedCount?: number;
@@ -32,7 +32,6 @@ declare module "express-session" {
 }
 
 const main = async () => {
-
   // Initialize environment variables
   dotenv.config();
 
@@ -41,29 +40,29 @@ const main = async () => {
   const router = express.Router();
 
   // Initialize TypeORM Data Source
-  dataSource.initialize()
+  dataSource
+    .initialize()
     .then(() => {
-      console.log("Data Source Inititialized!")
+      console.log('Data Source Inititialized!');
     })
     .catch((err: Error) => {
-      console.log("There was an error initializing the data source", err)
-    })
+      console.log('There was an error initializing the data source', err);
+    });
 
   // Initialize Redis Client
   const redisClient = new Redis({
     port: parseInt(process.env.REDIS_PORT),
     host: process.env.REDIS_HOST,
-    password: process.env.REDIS_PASSWORD
-  })
+    password: process.env.REDIS_PASSWORD,
+  });
 
   // Initialize Redis Store
-  const redisStore  = new RedisStore({ client: redisClient })
+  const redisStore = new RedisStore({ client: redisClient });
 
   // Setup parser middleware
   app.use(bodyParser.json());
-  
 
-  // Setup session middleware 
+  // Setup session middleware
   app.use(
     session({
       store: redisStore,
@@ -72,32 +71,32 @@ const main = async () => {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        path: "/",
+        path: '/',
         httpOnly: true,
-        sameSite: "strict",
+        sameSite: 'strict',
         secure: false,
         maxAge: 1000 * 60 * 60 * 24,
       },
     })
-  )
+  );
 
   // Setup router middleware
   app.use(router);
 
   // Initialize Apollo Server
   const apolloServer = await createApolloServer();
-  await apolloServer.start()
-  
+  await apolloServer.start();
+
   //Setup Apollo middleware
   app.use(
-    '/graphql', 
+    '/graphql',
     expressMiddleware(apolloServer, {
       context: async ({ req, res }) => ({
         req,
         res,
         dataSource,
         redis: redisClient,
-        repository
+        repository,
       }),
     })
   );
@@ -106,10 +105,10 @@ const main = async () => {
     console.log(`Server ready on port ${process.env.PORT}`);
   });
 
-  router.get("/", (req, res) => {
+  router.get('/', (req, res) => {
     if (!req.session?.userId) {
       req.session.userId = req.query.userId as string;
-      console.log("userId is now set");
+      console.log('userId is now set');
       req.session.loadedCount = 0;
     } else {
       req.session.loadedCount = (req.session.loadedCount || 0) + 1;
@@ -120,9 +119,9 @@ const main = async () => {
     );
   });
 
-  router.post("/register", async (req, res, next) => {
+  router.post('/register', async (req, res, next) => {
     try {
-      console.log("params", req.body);
+      console.log('params', req.body);
 
       const userResult = await register(
         req.body.email,
@@ -142,9 +141,9 @@ const main = async () => {
     }
   });
 
-  router.post("/login", async (req, res, next) => {
+  router.post('/login', async (req, res, next) => {
     try {
-      console.log("params", req.body);
+      console.log('params', req.body);
       const userResult = await login(req.body.userName, req.body.password);
 
       if (userResult && userResult.user) {
@@ -155,13 +154,12 @@ const main = async () => {
       } else {
         next();
       }
-
     } catch (ex) {
       res.send(ex.message);
     }
   });
 
-  router.post("/logout", async (req, res, next) => {
+  router.post('/logout', async (req, res, next) => {
     try {
       const msg = await logout(req.body.userName);
 
@@ -171,16 +169,15 @@ const main = async () => {
       } else {
         next();
       }
-
     } catch (ex) {
       res.send(ex.message);
     }
-  })
+  });
 
-  router.post("/createthread", async (req, res) => {
+  router.post('/createthread', async (req, res) => {
     try {
-      console.log("userId", req.session);
-      console.log("body", req.body);
+      console.log('userId', req.session);
+      console.log('body', req.body);
       const msg = await createThread(
         req.session!.userId as string,
         req.body.categoryId,
@@ -189,33 +186,31 @@ const main = async () => {
       );
       res.send(msg);
     } catch (ex) {
-      console.log(ex)
-      res.send(ex.message)
+      console.log(ex);
+      res.send(ex.message);
     }
-  })
+  });
 
-  router.post("/categorythreads", async (req, res ) => {
+  router.post('/categorythreads', async (req, res) => {
     try {
       const threads = await getThreadsByCategoryId(req.body.categoryId);
 
       if (threads && threads.entities) {
-        let titles = "";
+        let titles = '';
         threads.entities.forEach((th) => {
-          titles += th.title + ", ";
-        })
+          titles += th.title + ', ';
+        });
         res.send(titles);
       }
 
       if (threads && threads.messages) {
         res.send(threads.messages[0]);
       }
-
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
       res.send(ex.message);
     }
   });
-
-}
+};
 
 main();

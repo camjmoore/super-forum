@@ -1,12 +1,15 @@
-import { User } from "./entities/User";
-import bcrypt from "bcryptjs";
-import { isEmailValid } from "./validators/EmailValidator";
-import { isPasswordValid } from "./validators/PasswordValidator";
+import { User } from './entities/User';
+import bcrypt from 'bcryptjs';
+import { isEmailValid } from './validators/EmailValidator';
+import { isPasswordValid } from './validators/PasswordValidator';
 
 const saltRounds = 10;
 
 export class UserResult {
-  constructor(public messages?: Array<string>, public user?: User) {}
+  constructor(
+    public messages?: Array<string>,
+    public user?: User
+  ) {}
 }
 
 export const register = async (
@@ -18,7 +21,7 @@ export const register = async (
   if (!result.isValid) {
     return {
       messages: [
-        "passwords must have min length of 8, 1 upper case character, 1 number and 1 symbol",
+        'passwords must have min length of 8, 1 upper case character, 1 number and 1 symbol',
       ],
     };
   }
@@ -40,7 +43,7 @@ export const register = async (
     password: hashedPassword,
   }).save();
 
-  userEntity.password = "";
+  userEntity.password = '';
 
   return {
     user: userEntity,
@@ -61,7 +64,7 @@ export const login = async (
 
   if (!user.confirmed) {
     return {
-      messages: ["User has not confirmed their registration email yet."],
+      messages: ['User has not confirmed their registration email yet.'],
     };
   }
 
@@ -69,7 +72,7 @@ export const login = async (
 
   if (!passwordMatch) {
     return {
-      messages: ["Password is invalid."],
+      messages: ['Password is invalid.'],
     };
   }
 
@@ -87,7 +90,7 @@ export const logout = async (userName: string): Promise<Array<string>> => {
     return [`User with userName ${userName} could not be found.`];
   }
 
-  return ["User logged out."];
+  return ['User logged out.'];
 };
 
 export const getUserById = async (id: string): Promise<UserResult> => {
@@ -99,7 +102,7 @@ export const getUserById = async (id: string): Promise<UserResult> => {
     };
   }
 
-  user.password = "";
+  user.password = '';
 
   return {
     user: user,

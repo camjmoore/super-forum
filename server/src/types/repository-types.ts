@@ -1,11 +1,11 @@
 //import { User } from "../repository/entities/User";
-import { Thread } from "../repository/entities/Thread";
+import { Thread } from '../repository/entities/Thread';
 //import { ThreadPoint } from "../repository/entities/ThreadPoint";
-import { ThreadItem } from "../repository/entities/ThreadItem";
+import { ThreadItem } from '../repository/entities/ThreadItem';
 //import { ThreadItemPoint } from "../repository/entities/ThreadItemPoint";
-import { ThreadCategory } from "../repository/entities/ThreadCategory";
-import { QuerySingleResult, QueryArrayResult } from "../repository/QueryResult";
-import { UserResult } from "../repository/UserRepo";
+import { ThreadCategory } from '../repository/entities/ThreadCategory';
+import { QuerySingleResult, QueryArrayResult } from '../repository/QueryResult';
+import { UserResult } from '../repository/UserRepo';
 
 export type Repositories = {
   // ThreadRepo exports

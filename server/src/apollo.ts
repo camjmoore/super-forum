@@ -6,8 +6,8 @@ import { ApolloContext } from './types/IApolloContext';
 import resolvers from './resolvers';
 import { GRAPHQL_SCHEMA_PATH } from './constants';
 
-const schema = loadSchemaSync(GRAPHQL_SCHEMA_PATH, { 
-  loaders: [new GraphQLFileLoader()] 
+const schema = loadSchemaSync(GRAPHQL_SCHEMA_PATH, {
+  loaders: [new GraphQLFileLoader()],
 });
 
 const schemaWithResolvers = addResolversToSchema({ schema, resolvers });
