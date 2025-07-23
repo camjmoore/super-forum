@@ -74,7 +74,7 @@ export const threadMutations: Pick<MutationResolvers<ApolloContext>, 'createThre
 
 /*export const threadFieldResolvers: ThreadResolvers<ApolloContext> = {
    user: async (parent, _, { repository }) => {
-      return await repository.user.getUserById(parent.createdBy);
+      return await repository.user.getUserById(parent.id);
    },
 
    threadCategory: async (parent, _, { repository }) => {
