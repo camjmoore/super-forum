@@ -1,0 +1,22 @@
+# Build output
+dist/
+build/
+
+# Generated files
+src/types/resolvers-types.generated.ts
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
+.parcel-cache/

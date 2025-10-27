@@ -7,7 +7,11 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,md}'",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,md}'",
+    "check": "npm run format:check && npm run lint",
+    "fix": "npm run format && npm run lint:fix",
     "codegen": "graphql-codegen --config codegen.yml",
     "db:clean": "tsx scripts/cleanDb.ts",
     "db:confirmuser": "tsx scripts/confirmUser.ts",
@@ -39,7 +43,7 @@
     "typeorm": "^0.3.22"
   },
   "devDependencies": {
-    "@eslint/js": "^9.31.0",
+    "@eslint/js": "^9.37.0",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@types/cors": "^2.8.17",
@@ -48,13 +52,13 @@
     "@types/pg": "^8.11.14",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
-    "eslint": "^9.31.0",
+    "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.3",
-    "globals": "^16.3.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0"
+    "typescript-eslint": "^8.46.0"
   }
 }
