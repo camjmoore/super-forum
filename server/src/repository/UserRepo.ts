@@ -108,3 +108,28 @@ export const getUserById = async (id: string): Promise<UserResult> => {
     user: user,
   };
 };
+
+export const changePassword = async (
+  userId: string,
+  newPassword: string
+): Promise<UserResult> => {
+  const user = await User.findOne({ where: { id: userId } });
+
+  if (!user) {
+    return {
+      messages: ['User not found'],
+    };
+  }
+
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  user.password = '';
+
+  return {
+    user: user,
+  };
+};
