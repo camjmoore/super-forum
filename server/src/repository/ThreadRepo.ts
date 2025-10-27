@@ -156,3 +156,42 @@ export const getAllCategories = async (): Promise<
     entities: threadCategories,
   };
 };
+
+export const getUserThreads = async (
+  userId: string
+): Promise<QueryArrayResult<Thread>> => {
+  const threads = await Thread.createQueryBuilder('thread')
+    .leftJoinAndSelect('thread.user', 'user')
+    .leftJoinAndSelect('thread.threadCategory', 'threadCategory')
+    .where('user.id = :userId', { userId })
+    .orderBy('thread.createdOn', 'DESC')
+    .getMany();
+
+  return {
+    entities: threads || [],
+  };
+};
+
+export const getTopCategoryThreads = async (): Promise<
+  QueryArrayResult<Thread>
+> => {
+  // This should return CategoryThread[] based on the GraphQL schema
+  // Implementation depends on business requirements
+  const topThreads = await Thread.createQueryBuilder('thread')
+    .select([
+      'thread.id as threadId',
+      'category.id as categoryId',
+      'category.name as categoryName',
+      'thread.title as title',
+      'thread.createdOn as titleCreatedOn',
+    ])
+    .leftJoin('thread.threadCategory', 'category')
+    .orderBy('thread.points', 'DESC')
+    .addOrderBy('thread.views', 'DESC')
+    .limit(10)
+    .getRawMany();
+
+  return {
+    entities: topThreads,
+  };
+};
