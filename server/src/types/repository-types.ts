@@ -20,10 +20,37 @@ export type Repositories = {
     categoryId: string
   ) => Promise<QueryArrayResult<Thread>>;
   getThreadsLatest: () => Promise<QueryArrayResult<Thread>>;
+  getUserThreads: (userId: string) => Promise<QueryArrayResult<Thread>>;
+  getTopCategoryThreads: () => Promise<QueryArrayResult<any>>;
+
+  // ThreadItemRepo exports
+  createThreadItem: (
+    userId: string,
+    threadId: string,
+    body: string
+  ) => Promise<QuerySingleResult<ThreadItem>>;
+  getThreadItemById: (id: string) => Promise<QuerySingleResult<ThreadItem>>;
   getThreadItemByThreadId: (
     id: string
   ) => Promise<QueryArrayResult<ThreadItem>>;
+  getThreadItemsByThreadId: (
+    threadId: string
+  ) => Promise<QueryArrayResult<ThreadItem>>;
+  getUserThreadItems: (userId: string) => Promise<QueryArrayResult<ThreadItem>>;
+
+  // CategoryRepo exports
   getAllCategories: () => Promise<QueryArrayResult<ThreadCategory>>;
+  getCategoryById: (id: string) => Promise<QuerySingleResult<ThreadCategory>>;
+  createCategory: (
+    name: string,
+    description?: string
+  ) => Promise<QuerySingleResult<ThreadCategory>>;
+  updateCategory: (
+    id: string,
+    name?: string,
+    description?: string
+  ) => Promise<QuerySingleResult<ThreadCategory>>;
+  deleteCategory: (id: string) => Promise<QuerySingleResult<ThreadCategory>>;
 
   // UserRepo exports
   register: (
@@ -34,5 +61,18 @@ export type Repositories = {
   login: (userName: string, password: string) => Promise<UserResult>;
   logout: (userName: string) => Promise<Array<string>>;
   getUserById: (id: string) => Promise<UserResult>;
+  changePassword: (userId: string, newPassword: string) => Promise<UserResult>;
+
+  // PointsRepo exports
+  updateThreadPoint: (
+    userId: string,
+    threadId: string,
+    increment: boolean
+  ) => Promise<string[]>;
+  updateThreadItemPoint: (
+    userId: string,
+    threadItemId: string,
+    increment: boolean
+  ) => Promise<string[]>;
   //getUserByUserName: (userName: string) => Promise<UserResult>;
 };
