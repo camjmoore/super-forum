@@ -8,6 +8,7 @@ import {
 
 export const UserResult: UserResultResolvers = {
   __resolveType(obj: any) {
+    if (obj.__typename) return obj.__typename;
     if (obj.user) return 'User';
     if (obj.messages) return 'EntityResult';
     return null;
