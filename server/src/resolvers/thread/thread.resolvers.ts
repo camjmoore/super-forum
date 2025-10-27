@@ -64,8 +64,9 @@ export const threadQueries: Pick<
     };
   },
 
-  getTopCategoryThread: async () => {
-    throw new Error('Not yet Implemented');
+  getTopCategoryThread: async (_, __, { repository }) => {
+    const result = await repository.getTopCategoryThreads();
+    return result.entities || [];
   },
 };
 
@@ -86,16 +87,46 @@ export const threadMutations: Pick<
   },
 };
 
-/*export const threadFieldResolvers: ThreadResolvers<ApolloContext> = {
-   user: async (parent, _, { repository }) => {
-      return await repository.user.getUserById(parent.id);
-   },
+// Thread Field Resolvers - for resolving related data
+export const threadFieldResolvers: ThreadResolvers<ApolloContext> = {
+  user: async (parent, _, { req, repository }) => {
+    const userId = parent.user?.id ?? req.session.userId;
+    if (!userId) {
+      throw new Error('User not found');
+    }
+    const result = await repository.getUserById(userId);
+    if (!result.user) {
+      throw new Error('User not found');
+    }
+    return result.user;
+  },
 
-   threadCategory: async (parent, _, { repository }) => {
-      return await repository.category.getCategoryById(parent.categoryId);
-   },
+  threadCategory: async (parent, _, { repository }) => {
+    const categoryId = parent.threadCategory?.id;
+    if (!categoryId) {
+      throw new Error('Thread category not found');
+    }
+    const result = await repository.getCategoryById(categoryId);
+    if (!result.entity) {
+      throw new Error('Thread category not found');
+    }
+    return result.entity;
+  },
 
-   threadItems: async (parent, _, { repository }) => {
-      return await repository.threadItem.getThreadItemsByThreadId(parent.id);
-   }
-};*/
+  threadItems: async (parent, _, { repository }) => {
+    const result = await repository.getThreadItemByThreadId(parent.id);
+    return result.entities || [];
+  },
+
+  // Other fields are automatically resolved by GraphQL
+  id: (parent) => parent.id,
+  views: (parent) => parent.views,
+  points: (parent) => parent.points,
+  isDisabled: (parent) => parent.isDisabled,
+  title: (parent) => parent.title,
+  body: (parent) => parent.body,
+  createdBy: (parent) => parent.createdBy,
+  createdOn: (parent) => parent.createdOn,
+  lastModifiedBy: (parent) => parent.lastModifiedBy,
+  lastModifiedOn: (parent) => parent.lastModifiedOn,
+};
