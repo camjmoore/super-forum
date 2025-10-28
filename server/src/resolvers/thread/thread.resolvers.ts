@@ -76,10 +76,10 @@ export const threadMutations: Pick<
 > = {
   createThread: async (
     _,
-    { userId, categoryId, title, body },
-    { repository: { createThread } }
+    { categoryId, title, body },
+    { req, repository: { createThread } }
   ) => {
-    const { messages } = await createThread(userId, categoryId, title, body);
+    const { messages } = await createThread(req.session?.id, categoryId, title, body);
     return {
       __typename: 'EntityResult',
       messages: messages,

@@ -116,7 +116,6 @@ type Query {
 
 type Mutation {
     createThread(
-      userId: ID!
       categoryId: ID!
       title: String!
       body: String!
