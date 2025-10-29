@@ -79,7 +79,15 @@ export const threadMutations: Pick<
     { categoryId, title, body },
     { req, repository: { createThread } }
   ) => {
-    const { messages } = await createThread(req.session?.id, categoryId, title, body);
+    if (!req.session?.userId) {
+        return {
+            __typename: 'EntityResult',
+            messages: ['You must be logged in to create a thread'],
+        };
+    }
+            
+    const { messages } = await createThread(req.session.userId, categoryId, title, body);
+            
     return {
       __typename: 'EntityResult',
       messages: messages,
