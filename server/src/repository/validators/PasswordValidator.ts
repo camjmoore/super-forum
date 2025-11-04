@@ -21,7 +21,7 @@ export const isPasswordValid = (password: string) => {
 
   if (!strongPasswordRegExp.test(password)) {
     passwordTestResult.message =
-      'Password must contatin atleast 1 special character, 1 capital letter and 1 number';
+      'Password must contain atleast 1 special character, 1 capital letter and 1 number';
     passwordTestResult.isValid = false;
   }
 
