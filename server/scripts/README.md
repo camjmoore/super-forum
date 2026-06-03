@@ -35,7 +35,7 @@ npm run db:clean
 
 ## How Seeding Works
 
-The seeding script (`robustSeed.ts`) uses a transaction to ensure all data is inserted consistently. If any part of the seeding process fails, the transaction is rolled back, ensuring the database remains in a consistent state.
+The seeding script (`seed.ts`) uses a transaction to ensure all data is inserted consistently. If any part of the seeding process fails, the transaction is rolled back, ensuring the database remains in a consistent state.
 
 The script directly uses TypeORM's entity manager to create and save entities, bypassing the TypeORM-extension seeder system for more reliable operation.
 

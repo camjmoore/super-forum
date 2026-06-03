@@ -16,7 +16,7 @@
     "db:clean": "tsx scripts/cleanDb.ts",
     "db:confirmuser": "tsx scripts/confirmUser.ts",
     "db:addcategories": "tsx scripts/insertCategories.ts",
-    "db:seed": "tsx scripts/robustSeed.ts",
+    "db:seed": "tsx scripts/seed.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
