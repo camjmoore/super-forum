@@ -120,7 +120,7 @@ type Mutation {
       title: String!
       body: String!
     ): EntityResult
-    createThreadItem(userId: ID!, threadId: ID!, body: String): EntityResult
+    createThreadItem(threadId: ID!, body: String): EntityResult
     register(email: String!, userName: String!, password: String!): UserResult!
     login(userName: String!, password: String!): String!
     logout(userName: String!): String!

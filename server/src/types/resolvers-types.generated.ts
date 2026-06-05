@@ -60,7 +60,6 @@ export type MutationCreateThreadArgs = {
 export type MutationCreateThreadItemArgs = {
   body?: InputMaybe<Scalars['String']['input']>;
   threadId: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
 };
 
 
@@ -381,7 +380,7 @@ export type EntityResultResolvers<ContextType = ApolloContext, ParentType extend
 export type MutationResolvers<ContextType = ApolloContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   changePassword?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'newPassword'>>;
   createThread?: Resolver<Maybe<ResolversTypes['EntityResult']>, ParentType, ContextType, RequireFields<MutationCreateThreadArgs, 'body' | 'categoryId' | 'title'>>;
-  createThreadItem?: Resolver<Maybe<ResolversTypes['EntityResult']>, ParentType, ContextType, RequireFields<MutationCreateThreadItemArgs, 'threadId' | 'userId'>>;
+  createThreadItem?: Resolver<Maybe<ResolversTypes['EntityResult']>, ParentType, ContextType, RequireFields<MutationCreateThreadItemArgs, 'threadId'>>;
   login?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'userName'>>;
   logout?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLogoutArgs, 'userName'>>;
   register?: Resolver<ResolversTypes['UserResult'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'email' | 'password' | 'userName'>>;

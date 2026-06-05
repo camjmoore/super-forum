@@ -37,7 +37,13 @@ export const threadItemMutations: Pick<
   MutationResolvers<ApolloContext>,
   'createThreadItem'
 > = {
-  createThreadItem: async (_, { userId, threadId, body }, { repository }) => {
+  createThreadItem: async (_, { threadId, body }, { req, repository }) => {
+    const userId = req.session?.userId;
+
+    if (!userId) {
+        return { __typename: 'EntityResult', messages: ['You must be logged in.']}
+      }
+
     const { messages } = await repository.createThreadItem(
       userId,
       threadId,
