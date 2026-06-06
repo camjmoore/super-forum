@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
 import { RedisStore } from 'connect-redis';
@@ -18,6 +19,7 @@ declare global {
       REDIS_PASSWORD: string;
       COOKIE_NAME: string;
       SESSION_SECRET: string;
+      CORS_ORIGIN: string;
     }
   }
 }
@@ -56,6 +58,14 @@ const main = async () => {
 
   // Initialize Redis Store
   const redisStore = new RedisStore({ client: redisClient });
+
+  // Setup CORS middleware
+  app.use(
+    cors({
+      origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+      credentials: true,
+    })
+  );
 
   // Setup parser middleware
   app.use(bodyParser.json());
