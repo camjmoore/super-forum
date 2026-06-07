@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import session from 'express-session';
 import { RedisStore } from 'connect-redis';
 import Redis from 'ioredis';
@@ -20,6 +21,7 @@ declare global {
       COOKIE_NAME: string;
       SESSION_SECRET: string;
       CORS_ORIGIN: string;
+      JWT_SECRET: string;
     }
   }
 }
@@ -59,6 +61,16 @@ const main = async () => {
   // Initialize Redis Store
   const redisStore = new RedisStore({ client: redisClient });
 
+  // Setup rate limiting
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 200,
+      standardHeaders: true,
+      legacyHeaders: false,
+    })
+  );
+
   // Setup CORS middleware
   app.use(
     cors({
@@ -96,6 +108,15 @@ const main = async () => {
   await apolloServer.start();
 
   //Setup Apollo middleware
+  app.use(
+    '/graphql',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 50,
+      standardHeaders: true,
+      legacyHeaders: false,
+    })
+  );
   app.use(
     '/graphql',
     expressMiddleware(apolloServer, {

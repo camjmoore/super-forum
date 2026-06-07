@@ -61,6 +61,8 @@ export type Repositories = {
   login: (userName: string, password: string) => Promise<UserResult>;
   logout: (userName: string) => Promise<Array<string>>;
   getUserById: (id: string) => Promise<UserResult>;
+  getUserByUserName: (userName: string) => Promise<UserResult>;
+  confirmUser: (token: string) => Promise<string>;
   changePassword: (userId: string, newPassword: string) => Promise<UserResult>;
 
   // PointsRepo exports
@@ -74,5 +76,4 @@ export type Repositories = {
     threadItemId: string,
     increment: boolean
   ) => Promise<string[]>;
-  //getUserByUserName: (userName: string) => Promise<UserResult>;
 };

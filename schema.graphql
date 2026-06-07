@@ -112,6 +112,7 @@ type Query {
   getAllCategories: ThreadCategoryArray!
   me: UserResult!
   getTopCategoryThread: [CategoryThread!]
+  getUserByUserName(userName: String!): UserResult!
 }
 
 type Mutation {
@@ -127,4 +128,5 @@ type Mutation {
     updateThreadPoint(threadId: ID!, increment: Boolean!): String!
     updateThreadItemPoint(threadItemId: ID!, increment: Boolean!): String!
     changePassword(newPassword: String!): String!
+    confirmUser(token: String!): String!
   }

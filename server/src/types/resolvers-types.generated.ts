@@ -35,6 +35,7 @@ export type EntityResult = {
 export type Mutation = {
   __typename?: 'Mutation';
   changePassword: Scalars['String']['output'];
+  confirmUser: Scalars['String']['output'];
   createThread?: Maybe<EntityResult>;
   createThreadItem?: Maybe<EntityResult>;
   login: Scalars['String']['output'];
@@ -47,6 +48,11 @@ export type Mutation = {
 
 export type MutationChangePasswordArgs = {
   newPassword: Scalars['String']['input'];
+};
+
+
+export type MutationConfirmUserArgs = {
+  token: Scalars['String']['input'];
 };
 
 
@@ -100,6 +106,7 @@ export type Query = {
   getThreadsByCategoryId: ThreadArrayResult;
   getThreadsLatest: ThreadArrayResult;
   getTopCategoryThread?: Maybe<Array<CategoryThread>>;
+  getUserByUserName: UserResult;
   me: UserResult;
 };
 
@@ -116,6 +123,11 @@ export type QueryGetThreadItemByThreadIdArgs = {
 
 export type QueryGetThreadsByCategoryIdArgs = {
   categoryId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetUserByUserNameArgs = {
+  userName: Scalars['String']['input'];
 };
 
 export type Thread = {
@@ -379,6 +391,7 @@ export type EntityResultResolvers<ContextType = ApolloContext, ParentType extend
 
 export type MutationResolvers<ContextType = ApolloContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   changePassword?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'newPassword'>>;
+  confirmUser?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationConfirmUserArgs, 'token'>>;
   createThread?: Resolver<Maybe<ResolversTypes['EntityResult']>, ParentType, ContextType, RequireFields<MutationCreateThreadArgs, 'body' | 'categoryId' | 'title'>>;
   createThreadItem?: Resolver<Maybe<ResolversTypes['EntityResult']>, ParentType, ContextType, RequireFields<MutationCreateThreadItemArgs, 'threadId'>>;
   login?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'userName'>>;
@@ -395,6 +408,7 @@ export type QueryResolvers<ContextType = ApolloContext, ParentType extends Resol
   getThreadsByCategoryId?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadsByCategoryIdArgs, 'categoryId'>>;
   getThreadsLatest?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType>;
   getTopCategoryThread?: Resolver<Maybe<Array<ResolversTypes['CategoryThread']>>, ParentType, ContextType>;
+  getUserByUserName?: Resolver<ResolversTypes['UserResult'], ParentType, ContextType, RequireFields<QueryGetUserByUserNameArgs, 'userName'>>;
   me?: Resolver<ResolversTypes['UserResult'], ParentType, ContextType>;
 }>;
 

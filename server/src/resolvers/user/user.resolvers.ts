@@ -7,7 +7,10 @@ import {
 import { ApolloContext } from '../../types/IApolloContext';
 
 // User Query Resolvers
-export const userQueries: Pick<QueryResolvers<ApolloContext>, 'me'> = {
+export const userQueries: Pick<
+  QueryResolvers<ApolloContext>,
+  'me' | 'getUserByUserName'
+> = {
   me: async (_, __, { req, repository }): Promise<UserResult> => {
     if (!req.session?.userId) {
       return {
@@ -30,12 +33,32 @@ export const userQueries: Pick<QueryResolvers<ApolloContext>, 'me'> = {
       messages: result.messages || ['User not found'],
     };
   },
+
+  getUserByUserName: async (
+    _,
+    { userName },
+    { repository }
+  ): Promise<UserResult> => {
+    const result = await repository.getUserByUserName(userName);
+
+    if (result.user) {
+      return {
+        __typename: 'User',
+        ...result.user,
+      };
+    }
+
+    return {
+      __typename: 'EntityResult',
+      messages: result.messages || ['User not found'],
+    };
+  },
 };
 
 // User Mutation Resolvers
 export const userMutations: Pick<
   MutationResolvers<ApolloContext>,
-  'register' | 'login' | 'logout' | 'changePassword'
+  'register' | 'login' | 'logout' | 'changePassword' | 'confirmUser'
 > = {
   register: async (
     _,
@@ -89,6 +112,10 @@ export const userMutations: Pick<
     }
 
     return result.messages?.[0] || 'Password change failed';
+  },
+
+  confirmUser: async (_, { token }, { repository }) => {
+    return repository.confirmUser(token);
   },
 };
 
