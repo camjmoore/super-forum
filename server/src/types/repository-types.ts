@@ -17,10 +17,19 @@ export type Repositories = {
   ) => Promise<{ messages?: string[] }>;
   getThreadById: (id: string) => Promise<QuerySingleResult<Thread>>;
   getThreadsByCategoryId: (
-    categoryId: string
+    categoryId: string,
+    limit?: number,
+    offset?: number
   ) => Promise<QueryArrayResult<Thread>>;
-  getThreadsLatest: () => Promise<QueryArrayResult<Thread>>;
-  getUserThreads: (userId: string) => Promise<QueryArrayResult<Thread>>;
+  getThreadsLatest: (
+    limit?: number,
+    offset?: number
+  ) => Promise<QueryArrayResult<Thread>>;
+  getUserThreads: (
+    userId: string,
+    limit?: number,
+    offset?: number
+  ) => Promise<QueryArrayResult<Thread>>;
   getTopCategoryThreads: () => Promise<QueryArrayResult<any>>;
 
   // ThreadItemRepo exports

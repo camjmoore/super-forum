@@ -81,36 +81,44 @@ export const getThreadById = async (
 };
 
 export const getThreadsByCategoryId = async (
-  categoryId: string
+  categoryId: string,
+  limit = 10,
+  offset = 0
 ): Promise<QueryArrayResult<Thread>> => {
-  const threads = await Thread.createQueryBuilder('thread')
+  const [threads, count] = await Thread.createQueryBuilder('thread')
     .where('thread.threadCategory = :categoryId', { categoryId })
     .leftJoinAndSelect('thread.threadCategory', 'threadCategory')
     .orderBy('thread.createdOn', 'DESC')
-    .getMany();
+    .take(limit)
+    .skip(offset)
+    .getManyAndCount();
 
-  if (!threads) {
+  if (!threads || threads.length === 0) {
     return {
       messages: ['threads of category not found.'],
     };
   }
 
-  console.log(threads);
   return {
     entities: threads,
+    count,
   };
 };
 
-export const getThreadsLatest = async (): Promise<QueryArrayResult<Thread>> => {
+export const getThreadsLatest = async (
+  limit = 10,
+  offset = 0
+): Promise<QueryArrayResult<Thread>> => {
   const startDate = new Date();
   startDate.setHours(startDate.getHours() - 24);
-  //get threads within last 24 hours
 
-  const threads = await Thread.createQueryBuilder('thread')
+  const [threads, count] = await Thread.createQueryBuilder('thread')
     .leftJoinAndSelect('thread.threadCategory', 'threadCategory')
     .where('thread.createdOn >= :startDate', { startDate })
     .orderBy('thread.createdOn', 'DESC')
-    .getMany();
+    .take(limit)
+    .skip(offset)
+    .getManyAndCount();
 
   if (!threads || threads.length === 0) {
     return {
@@ -120,6 +128,7 @@ export const getThreadsLatest = async (): Promise<QueryArrayResult<Thread>> => {
 
   return {
     entities: threads,
+    count,
   };
 };
 //thread item functions should be slpit into a new repo file: ThreadItemRepo
@@ -158,17 +167,22 @@ export const getAllCategories = async (): Promise<
 };
 
 export const getUserThreads = async (
-  userId: string
+  userId: string,
+  limit = 10,
+  offset = 0
 ): Promise<QueryArrayResult<Thread>> => {
-  const threads = await Thread.createQueryBuilder('thread')
+  const [threads, count] = await Thread.createQueryBuilder('thread')
     .leftJoinAndSelect('thread.user', 'user')
     .leftJoinAndSelect('thread.threadCategory', 'threadCategory')
     .where('user.id = :userId', { userId })
     .orderBy('thread.createdOn', 'DESC')
-    .getMany();
+    .take(limit)
+    .skip(offset)
+    .getManyAndCount();
 
   return {
     entities: threads || [],
+    count,
   };
 };
 

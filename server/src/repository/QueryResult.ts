@@ -8,6 +8,7 @@ export class QuerySingleResult<T> {
 export class QueryArrayResult<T> {
   constructor(
     public messages?: Array<string>,
-    public entities?: Array<T>
+    public entities?: Array<T>,
+    public count?: number
   ) {}
 }

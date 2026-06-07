@@ -116,6 +116,14 @@ export type QueryGetThreadItemByThreadIdArgs = {
 
 export type QueryGetThreadsByCategoryIdArgs = {
   categoryId: Scalars['ID']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetThreadsLatestArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Thread = {
@@ -138,6 +146,7 @@ export type Thread = {
 export type ThreadArray = {
   __typename?: 'ThreadArray';
   threads?: Maybe<Array<Thread>>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ThreadArrayResult = EntityResult | ThreadArray;
@@ -393,7 +402,7 @@ export type QueryResolvers<ContextType = ApolloContext, ParentType extends Resol
   getThreadById?: Resolver<Maybe<ResolversTypes['ThreadResult']>, ParentType, ContextType, RequireFields<QueryGetThreadByIdArgs, 'threadId'>>;
   getThreadItemByThreadId?: Resolver<ResolversTypes['ThreadItemArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadItemByThreadIdArgs, 'threadId'>>;
   getThreadsByCategoryId?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType, RequireFields<QueryGetThreadsByCategoryIdArgs, 'categoryId'>>;
-  getThreadsLatest?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType>;
+  getThreadsLatest?: Resolver<ResolversTypes['ThreadArrayResult'], ParentType, ContextType, Partial<QueryGetThreadsLatestArgs>>;
   getTopCategoryThread?: Resolver<Maybe<Array<ResolversTypes['CategoryThread']>>, ParentType, ContextType>;
   me?: Resolver<ResolversTypes['UserResult'], ParentType, ContextType>;
 }>;
@@ -417,6 +426,7 @@ export type ThreadResolvers<ContextType = ApolloContext, ParentType extends Reso
 
 export type ThreadArrayResolvers<ContextType = ApolloContext, ParentType extends ResolversParentTypes['ThreadArray'] = ResolversParentTypes['ThreadArray']> = ResolversObject<{
   threads?: Resolver<Maybe<Array<ResolversTypes['Thread']>>, ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
