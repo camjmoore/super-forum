@@ -1,4 +1,4 @@
-import datasource from "../src/data-source.ts"
+import datasource from "../src/data-source.js"
 
 export const cleanDB = async () => {
   await datasource.initialize();
@@ -6,4 +6,3 @@ export const cleanDB = async () => {
 }
 
 cleanDB();
-

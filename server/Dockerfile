@@ -20,4 +20,4 @@ COPY server/package.json ./
 COPY schema.graphql /schema.graphql
 
 EXPOSE 4000
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]

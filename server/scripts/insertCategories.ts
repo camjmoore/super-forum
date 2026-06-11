@@ -1,5 +1,5 @@
-import { ThreadCategory } from "../src/repository/entities/ThreadCategory.ts";
-import datasource from "../src/data-source.ts";
+import { ThreadCategory } from "../src/repository/entities/ThreadCategory.js";
+import datasource from "../src/data-source.js";
 
 const insertCategories = async () => {
   await datasource.initialize();

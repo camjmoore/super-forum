@@ -1,12 +1,12 @@
 // Enables TypeORM to read its decorators at runtime
 import "reflect-metadata";
-import dataSource from "../src/data-source";
-import { User } from "../src/repository/entities/User";
-import { ThreadCategory } from "../src/repository/entities/ThreadCategory";
-import { Thread } from "../src/repository/entities/Thread";
-import { ThreadItem } from "../src/repository/entities/ThreadItem";
-import { ThreadPoint } from "../src/repository/entities/ThreadPoint";
-import { ThreadItemPoint } from "../src/repository/entities/ThreadItemPoint";
+import dataSource from "../src/data-source.js";
+import { User } from "../src/repository/entities/User.js";
+import { ThreadCategory } from "../src/repository/entities/ThreadCategory.js";
+import { Thread } from "../src/repository/entities/Thread.js";
+import { ThreadItem } from "../src/repository/entities/ThreadItem.js";
+import { ThreadPoint } from "../src/repository/entities/ThreadPoint.js";
+import { ThreadItemPoint } from "../src/repository/entities/ThreadItemPoint.js";
 import bcrypt from "bcryptjs";
 import { faker } from "@faker-js/faker";
 
