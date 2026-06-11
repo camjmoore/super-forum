@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [master, 'ai/claude/**']
+  pull_request:
+    branches: [master]
+
+jobs:
+  server:
+    name: Server — build & test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Type-check
+        working-directory: server
+        run: npm run build
+
+      - name: Run tests
+        working-directory: server
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: ci-secret
+
+  client:
+    name: Client — build & type-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Build
+        working-directory: client
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000/graphql
