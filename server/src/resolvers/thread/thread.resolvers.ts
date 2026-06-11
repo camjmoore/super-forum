@@ -30,15 +30,20 @@ export const threadQueries: Pick<
 
   getThreadsByCategoryId: async (
     _,
-    { categoryId },
+    { categoryId, limit, offset },
     { repository: { getThreadsByCategoryId } }
   ) => {
-    const { entities, messages } = await getThreadsByCategoryId(categoryId);
+    const { entities, messages, count } = await getThreadsByCategoryId(
+      categoryId,
+      limit ?? 10,
+      offset ?? 0
+    );
 
     if (entities) {
       return {
         __typename: 'ThreadArray',
         threads: [...entities],
+        totalCount: count ?? entities.length,
       };
     }
 
@@ -48,13 +53,21 @@ export const threadQueries: Pick<
     };
   },
 
-  getThreadsLatest: async (_, __, { repository: { getThreadsLatest } }) => {
-    const { entities, messages } = await getThreadsLatest();
+  getThreadsLatest: async (
+    _,
+    { limit, offset },
+    { repository: { getThreadsLatest } }
+  ) => {
+    const { entities, messages, count } = await getThreadsLatest(
+      limit ?? 10,
+      offset ?? 0
+    );
 
     if (entities) {
       return {
         __typename: 'ThreadArray',
         threads: [...entities],
+        totalCount: count ?? entities.length,
       };
     }
 

@@ -38,6 +38,7 @@ type Thread {
 union ThreadResult = Thread | EntityResult
 type ThreadArray {
   threads: [Thread!]
+  totalCount: Int!
 }
 union ThreadArrayResult = ThreadArray | EntityResult
 
@@ -106,8 +107,8 @@ type CategoryThread {
 
 type Query {
   getThreadById(threadId: ID!): ThreadResult
-  getThreadsByCategoryId(categoryId: ID!): ThreadArrayResult!
-  getThreadsLatest: ThreadArrayResult!
+  getThreadsByCategoryId(categoryId: ID!, limit: Int, offset: Int): ThreadArrayResult!
+  getThreadsLatest(limit: Int, offset: Int): ThreadArrayResult!
   getThreadItemByThreadId(threadId: ID!): ThreadItemArrayResult!
   getAllCategories: ThreadCategoryArray!
   me: UserResult!
