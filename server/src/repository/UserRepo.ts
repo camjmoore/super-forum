@@ -2,6 +2,10 @@ import { User } from './entities/User';
 import bcrypt from 'bcryptjs';
 import { isEmailValid } from './validators/EmailValidator';
 import { isPasswordValid } from './validators/PasswordValidator';
+import {
+  sendVerificationEmail,
+  verifyToken,
+} from '../email/sendVerificationEmail';
 
 const saltRounds = 10;
 
@@ -44,6 +48,10 @@ export const register = async (
   }).save();
 
   userEntity.password = '';
+
+  sendVerificationEmail(userEntity.email, userEntity.id).catch((err) =>
+    console.error('Failed to send verification email:', err)
+  );
 
   return {
     user: userEntity,
@@ -107,6 +115,47 @@ export const getUserById = async (id: string): Promise<UserResult> => {
   return {
     user: user,
   };
+};
+
+export const getUserByUserName = async (
+  userName: string
+): Promise<UserResult> => {
+  const user = await User.findOne({ where: { userName } });
+
+  if (!user) {
+    return {
+      messages: [`User with userName ${userName} not found`],
+    };
+  }
+
+  user.password = '';
+
+  return {
+    user,
+  };
+};
+
+export const confirmUser = async (token: string): Promise<string> => {
+  const payload = verifyToken(token);
+
+  if (!payload) {
+    return 'Invalid or expired confirmation token.';
+  }
+
+  const user = await User.findOne({ where: { id: payload.userId } });
+
+  if (!user) {
+    return 'User not found.';
+  }
+
+  if (user.confirmed) {
+    return 'User is already confirmed.';
+  }
+
+  user.confirmed = true;
+  await user.save();
+
+  return 'User confirmed successfully.';
 };
 
 export const changePassword = async (

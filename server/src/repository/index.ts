@@ -13,6 +13,8 @@ import {
   login,
   logout,
   getUserById,
+  getUserByUserName,
+  confirmUser,
   changePassword,
 } from './UserRepo';
 import {
@@ -58,6 +60,8 @@ export const repository: Repositories = {
   login,
   logout,
   getUserById,
+  getUserByUserName,
+  confirmUser,
   changePassword,
 
   // Points operations
