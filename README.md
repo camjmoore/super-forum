@@ -40,7 +40,7 @@ docker compose up
 
 Services:
 - GraphQL API: http://localhost:4000/graphql
-- Frontend: http://localhost:3000 *(after Phase 3 is merged)*
+- Frontend: http://localhost:3000
 
 Seed the database after startup:
 
@@ -98,6 +98,7 @@ Copy `.env.example` and adjust for your environment.
 | `PG_PASSWORD` | `forum_password` | PostgreSQL password |
 | `REDIS_PASSWORD` | *(empty)* | Redis password (required in prod) |
 | `CORS_ORIGIN` | `http://localhost:3000` | Frontend origin |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:4000/graphql` | API URL baked into the client bundle at build time |
 | `SMTP_HOST` | *(unset)* | SMTP host for transactional email |
 | `PG_SYNCHRONIZE` | `true` | Set to `false` in production |
 
@@ -115,16 +116,18 @@ The test suite uses mocked repositories — no database required.
 
 ```bash
 cp .env.example .env
-# Edit .env: set SESSION_SECRET, JWT_SECRET, PG_PASSWORD, REDIS_PASSWORD, CORS_ORIGIN, SMTP_*
+# Edit .env: set SESSION_SECRET, JWT_SECRET, PG_PASSWORD, REDIS_PASSWORD,
+#            CORS_ORIGIN, NEXT_PUBLIC_API_URL, SMTP_*
 
 docker compose -f docker-compose.prod.yml up -d
 ```
 
 The production compose file:
-- Uses the multi-stage server image (`npm start`, not `npm run dev`)
+- Builds the server (multi-stage, `node dist/index.js`) and client (Next.js standalone, `node server.js`)
 - Sets `PG_SYNCHRONIZE=false` and `PG_LOGGING=false`
 - Requires Redis password
 - Exposes no source volume mounts
+- `NEXT_PUBLIC_API_URL` is a build-time arg — set it to the public URL of your API before building
 
 Run migrations after first deploy:
 
