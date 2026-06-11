@@ -269,7 +269,7 @@ describe('Query.getThreadsByCategoryId', () => {
       { contextValue: makeContext() }
     );
 
-    expect(mockRepo.getThreadsByCategoryId).toHaveBeenCalledWith('c1');
+    expect(mockRepo.getThreadsByCategoryId).toHaveBeenCalledWith('c1', 10, 0);
   });
 
   it('returns EntityResult when no threads found', async () => {
