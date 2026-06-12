@@ -15,7 +15,10 @@ const robustSeed = async () => {
     console.log("Initializing data source...");
     await dataSource.initialize();
     console.log("✅ Data source initialized");
-    
+
+    await dataSource.synchronize();
+    console.log("✅ Schema synchronized");
+
     // Start transaction
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
