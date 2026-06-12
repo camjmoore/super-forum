@@ -70,7 +70,8 @@ const main = async () => {
       legacyHeaders: false,
     })
   );
-
+  
+  console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
   // Setup CORS middleware
   app.use(
     cors({
@@ -93,7 +94,7 @@ const main = async () => {
       cookie: {
         path: '/',
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'none',
         secure: false,
         maxAge: 1000 * 60 * 60 * 24,
       },
