@@ -70,7 +70,8 @@ const main = async () => {
       legacyHeaders: false,
     })
   );
-
+  
+  console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
   // Setup CORS middleware
   app.use(
     cors({
