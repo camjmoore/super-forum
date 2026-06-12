@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY server/package.json ./
-COPY schema.graphql /schema.graphql
+COPY schema.graphql .
 
 EXPOSE 4000
 CMD ["node", "dist/src/index.js"]
