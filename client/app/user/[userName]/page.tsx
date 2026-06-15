@@ -16,37 +16,42 @@ export default function UserProfilePage({ params }: { params: Promise<{ userName
   const user = result?.__typename === 'User' ? result : null;
   const messages = result?.__typename === 'EntityResult' ? (result.messages ?? []) : [];
 
-  if (loading) return <p className="text-gray-500 text-sm">Loading…</p>;
-  if (error) return <p className="text-red-500 text-sm">Error loading profile.</p>;
-  if (messages?.length > 0) return <p className="text-gray-500">{messages[0]}</p>;
+  if (loading) return <p style={{ color: 'var(--muted)', fontSize: 14 }}>Loading…</p>;
+  if (error) return <p style={{ color: 'oklch(0.55 0.18 25)', fontSize: 14 }}>Error loading profile.</p>;
+  if (messages?.length > 0) return <p style={{ color: 'var(--muted)' }}>{messages[0]}</p>;
   if (!user) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded border border-gray-200 p-5">
-        <h1 className="text-xl font-bold text-gray-900">{user.userName}</h1>
-        <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+    <div style={{ maxWidth: 680, margin: '0 auto' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px 28px', marginBottom: 24 }}>
+        <h1 className="serif" style={{ margin: 0, fontSize: 26, fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+          {user.userName}
+        </h1>
+        <p style={{ margin: '5px 0 0', fontSize: 13.5, color: 'var(--muted)' }}>{user.email}</p>
         {!user.confirmed && (
-          <p className="text-xs text-yellow-600 mt-1">Email not confirmed</p>
+          <p className="meta" style={{ margin: '8px 0 0', color: 'oklch(0.58 0.14 80)', fontSize: 11 }}>Email not confirmed</p>
         )}
       </div>
 
-      <h2 className="text-sm font-semibold text-gray-700">
+      <h2 className="meta" style={{ margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.07em', fontSize: 11, color: 'var(--muted)' }}>
         Posts ({user.threads?.length ?? 0})
       </h2>
 
-      <div className="space-y-2">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {(user.threads ?? []).map((t) => (
-          <div key={t.id} className="bg-white rounded border border-gray-200 p-4">
-            <Link href={`/thread/${t.id}`} className="font-medium text-gray-900 hover:text-orange-600">
+          <div key={t.id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px 20px' }}>
+            <Link href={`/thread/${t.id}`} className="serif" style={{ fontSize: 17, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none', lineHeight: 1.3, display: 'block' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--ink)'; }}
+            >
               {t.title}
             </Link>
-            <div className="flex gap-3 mt-1 text-xs text-gray-400">
-              <Link href={`/category/${t.threadCategory.id}`} className="hover:text-orange-500">
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              <Link href={`/category/${t.threadCategory.id}`} className="meta" style={{ color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 11, textDecoration: 'none' }}>
                 {t.threadCategory.name}
               </Link>
-              <span>· {t.points} points</span>
-              <span>· {(t.threadItems ?? []).length} comment{(t.threadItems ?? []).length !== 1 ? 's' : ''}</span>
+              <span className="meta">· {t.points} pts</span>
+              <span className="meta">· {(t.threadItems ?? []).length} response{(t.threadItems ?? []).length !== 1 ? 's' : ''}</span>
             </div>
           </div>
         ))}

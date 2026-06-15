@@ -7,7 +7,21 @@ import { CREATE_THREAD } from '@/graphql/mutations';
 import { GET_ALL_CATEGORIES } from '@/graphql/queries';
 import type { CreateThreadMutation, CreateThreadMutationVariables, GetAllCategoriesQuery } from '@/graphql/__generated__/graphql';
 import { useAuth } from '@/context/AuthContext';
+import CategoryPill from '@/components/CategoryPill';
 import Link from 'next/link';
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 12px',
+  background: 'var(--surface-2)',
+  border: '1px solid var(--border)',
+  borderRadius: 'var(--radius-sm)',
+  fontFamily: 'var(--font-sans)',
+  fontSize: 14.5,
+  color: 'var(--ink)',
+  outline: 'none',
+  transition: 'border-color .15s',
+};
 
 export default function CreateThreadPage() {
   const router = useRouter();
@@ -33,70 +47,87 @@ export default function CreateThreadPage() {
     }
   };
 
-  if (authLoading) return <p className="text-gray-500 text-sm">Loading…</p>;
+  if (authLoading) return <p style={{ color: 'var(--muted)', fontSize: 14 }}>Loading…</p>;
+
   if (!user) {
     return (
-      <div className="bg-white rounded border border-gray-200 p-6 text-center">
-        <p className="text-gray-600 mb-3">You must be logged in to post.</p>
-        <Link href="/login" className="text-orange-500 hover:underline">Log in</Link>
+      <div style={{ maxWidth: 560, margin: '0 auto', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 32, textAlign: 'center' }}>
+        <p style={{ color: 'var(--ink-soft)', fontSize: 14.5, marginBottom: 16 }}>You must be logged in to post.</p>
+        <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>Log in</Link>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded border border-gray-200 p-6 max-w-2xl">
-      <h1 className="text-xl font-bold text-gray-800 mb-5">Create Post</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-400"
-          >
-            <option value="">Select a category…</option>
-            {categories.map((c: { id: string; name: string }) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
+    <div style={{ maxWidth: 560, margin: '0 auto' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, boxShadow: 'var(--shadow-pop)', padding: 28 }}>
+        <h1 className="serif" style={{ margin: '0 0 22px', fontSize: 26, fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+          Start a thread
+        </h1>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: 18 }}>
+            <label className="meta" style={{ display: 'block', marginBottom: 9, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 11, color: 'var(--muted)' }}>Category</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+              {categories.map((c) => (
+                <CategoryPill key={c.id} name={c.name} active={categoryId === c.id} onClick={() => setCategoryId(c.id)} />
+              ))}
+            </div>
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Post title"
-            required
-            maxLength={150}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-400"
-          />
-        </div>
+          <div style={{ marginBottom: 16 }}>
+            <label className="meta" style={{ display: 'block', marginBottom: 7, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 11, color: 'var(--muted)' }}>Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="A clear, specific question or claim"
+              required
+              maxLength={150}
+              className="form-input"
+              style={inputStyle}
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            placeholder="What's on your mind?"
-            required
-            rows={6}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 resize-none"
-          />
-        </div>
+          <div style={{ marginBottom: 20 }}>
+            <label className="meta" style={{ display: 'block', marginBottom: 7, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: 11, color: 'var(--muted)' }}>Body</label>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Make your case. Leave room for replies."
+              required
+              rows={6}
+              className="form-input"
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.55 }}
+            />
+          </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p style={{ color: 'oklch(0.55 0.18 25)', fontSize: 13, marginBottom: 14 }}>{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-orange-500 text-white px-5 py-2 rounded text-sm hover:bg-orange-600 disabled:opacity-50"
-        >
-          {loading ? 'Posting…' : 'Submit'}
-        </button>
-      </form>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 9 }}>
+            <Link href="/" style={{
+              display: 'inline-flex', alignItems: 'center', height: 38, padding: '0 14px',
+              borderRadius: 99, border: '1px solid var(--border-strong)',
+              background: 'transparent', color: 'var(--ink)', fontFamily: 'var(--font-sans)',
+              fontSize: 13.5, fontWeight: 500, textDecoration: 'none',
+            }}>
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              disabled={loading || !categoryId}
+              style={{
+                display: 'inline-flex', alignItems: 'center', height: 38, padding: '0 16px',
+                borderRadius: 99, border: 'none',
+                background: 'var(--accent)', color: '#fff', fontFamily: 'var(--font-sans)',
+                fontSize: 13.5, fontWeight: 600,
+                opacity: loading || !categoryId ? 0.45 : 1,
+              }}
+            >
+              {loading ? 'Posting…' : 'Post thread'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

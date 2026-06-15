@@ -1,10 +1,15 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useMutation } from '@apollo/client/react';
 import { UPDATE_THREAD_POINT } from '@/graphql/mutations';
 import type { UpdateThreadPointMutation, UpdateThreadPointMutationVariables } from '@/graphql/__generated__/graphql';
 import { useAuth } from '@/context/AuthContext';
+import VoteRail from '@/components/VoteRail';
+import { CommentIcon, EyeIcon } from '@/components/Icon';
+import { timeAgo, compact } from '@/lib/utils';
 
 interface Thread {
   id: string;
@@ -18,61 +23,100 @@ interface Thread {
   threadItems: { id: string }[];
 }
 
-export default function ThreadCard({ thread, refetch }: { thread: Thread; refetch?: () => void }) {
+export default function ThreadCard({ thread, refetch, index = 0 }: { thread: Thread; refetch?: () => void; index?: number }) {
   const { user } = useAuth();
+  const router = useRouter();
+  const [hover, setHover] = useState(false);
+  const [localPoints, setLocalPoints] = useState(thread.points);
+  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
+
   const [updatePoint] = useMutation<UpdateThreadPointMutation, UpdateThreadPointMutationVariables>(UPDATE_THREAD_POINT);
 
-  const vote = async (increment: boolean) => {
+  const handleVote = async (dir: 'up' | 'down') => {
     if (!user) return;
+    const next = userVote === dir ? null : dir;
+    const increment = dir === 'up';
+    setUserVote(next);
+    setLocalPoints((p) => {
+      if (next === null) return p + (dir === 'up' ? -1 : 1);
+      if (userVote !== null) return p + (dir === 'up' ? 2 : -2);
+      return p + (dir === 'up' ? 1 : -1);
+    });
     await updatePoint({ variables: { threadId: thread.id, increment } });
     refetch?.();
   };
 
   return (
-    <div className="bg-white rounded border border-gray-200 p-4 hover:border-orange-300 transition-colors">
-      <div className="flex gap-3">
-        {/* Vote column */}
-        <div className="flex flex-col items-center gap-1 min-w-8">
-          <button
-            onClick={() => vote(true)}
-            className="text-gray-400 hover:text-orange-500 disabled:opacity-40 text-lg leading-none"
-            disabled={!user}
-            title="Upvote"
+    <article
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'flex', gap: 14, padding: '18px 20px',
+        background: 'var(--surface)',
+        border: `1px solid ${hover ? 'var(--border-strong)' : 'var(--border)'}`,
+        borderRadius: 'var(--radius)',
+        boxShadow: hover ? 'var(--shadow-card)' : 'none',
+        transition: 'border-color .15s, box-shadow .15s, transform .15s',
+        transform: hover ? 'translateY(-1px)' : 'none',
+        animation: 'fadeUp .4s ease both',
+        animationDelay: `${index * 50}ms`,
+      }}
+    >
+      <div onClick={(e) => e.stopPropagation()}>
+        <VoteRail
+          points={localPoints}
+          onUp={() => handleVote('up')}
+          onDown={() => handleVote('down')}
+          disabled={!user}
+          size="md"
+          userVote={userVote}
+        />
+      </div>
+
+      <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => router.push(`/thread/${thread.id}`)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
+          <Link
+            href={`/category/${thread.threadCategory.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="meta"
+            style={{ color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 500, textDecoration: 'none' }}
           >
-            ▲
-          </button>
-          <span className="text-sm font-semibold text-gray-700">{thread.points}</span>
-          <button
-            onClick={() => vote(false)}
-            className="text-gray-400 hover:text-blue-500 disabled:opacity-40 text-lg leading-none"
-            disabled={!user}
-            title="Downvote"
-          >
-            ▼
-          </button>
+            {thread.threadCategory.name}
+          </Link>
+          <span style={{ color: 'var(--faint)' }}>·</span>
+          <span className="meta">{timeAgo(thread.createdOn)}</span>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <Link href={`/thread/${thread.id}`} className="text-base font-semibold text-gray-900 hover:text-orange-600 line-clamp-2">
-            {thread.title}
+        <h3
+          className="serif"
+          style={{
+            margin: 0, fontSize: 20, lineHeight: 1.25, fontWeight: 500,
+            color: hover ? 'var(--accent-press)' : 'var(--ink)',
+            transition: 'color .15s', letterSpacing: '-0.01em',
+          }}
+        >
+          {thread.title}
+        </h3>
+
+        <p style={{
+          margin: '8px 0 0', color: 'var(--ink-soft)', fontSize: 14.5, lineHeight: 1.55,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        }}>
+          {thread.body}
+        </p>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 13 }}>
+          <Link href={`/user/${thread.user.userName}`} onClick={(e) => e.stopPropagation()} style={{ fontSize: 13, color: 'var(--ink-soft)', fontWeight: 500, textDecoration: 'none' }}>
+            {thread.user.userName}
           </Link>
-          <p className="text-sm text-gray-500 mt-1 line-clamp-2">{thread.body}</p>
-          <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-            <Link href={`/category/${thread.threadCategory.id}`} className="hover:text-orange-500">
-              {thread.threadCategory.name}
-            </Link>
-            <span>·</span>
-            <Link href={`/user/${thread.user.userName}`} className="hover:text-orange-500">
-              {thread.user.userName}
-            </Link>
-            <span>·</span>
-            <span>{thread.threadItems.length} comment{thread.threadItems.length !== 1 ? 's' : ''}</span>
-            <span>·</span>
-            <span>{thread.views} views</span>
-          </div>
+          <span className="meta" style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <CommentIcon style={{ color: 'var(--faint)' }} /> {thread.threadItems.length}
+          </span>
+          <span className="meta" style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <EyeIcon style={{ color: 'var(--faint)' }} /> {compact(thread.views)}
+          </span>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,17 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@apollo/client/react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useCallback, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { GET_ALL_CATEGORIES } from '@/graphql/queries';
-import type { GetAllCategoriesQuery } from '@/graphql/__generated__/graphql';
+import { useCreateModal } from '@/context/CreateModalContext';
+import { SearchIcon, PlusIcon } from '@/components/Icon';
 
-export default function NavBar() {
+const primaryBtn: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', gap: 6,
+  height: 36, padding: '0 14px', borderRadius: 99, border: 'none',
+  background: 'var(--accent)', color: '#fff', fontFamily: 'var(--font-sans)',
+  fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
+};
+
+const ghostBtn: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center',
+  height: 36, padding: '0 14px', borderRadius: 99,
+  border: '1px solid var(--border-strong)',
+  background: 'transparent', color: 'var(--ink)', fontFamily: 'var(--font-sans)',
+  fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
+};
+
+function NavBarInner() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, logout } = useAuth();
-  const { data: catData } = useQuery<GetAllCategoriesQuery>(GET_ALL_CATEGORIES);
-  const categories = catData?.getAllCategories?.threadCategories ?? [];
+  const { open } = useCreateModal();
+
+  const q = searchParams.get('q') ?? '';
+
+  const setQ = useCallback((val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (val) {
+      params.set('q', val);
+    } else {
+      params.delete('q');
+    }
+    const base = pathname === '/' ? '/' : '/';
+    router.push(base + (params.toString() ? '?' + params.toString() : ''), { scroll: false });
+  }, [searchParams, router, pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -19,49 +48,76 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="bg-orange-500 text-white px-4 py-2 flex items-center gap-4 shadow">
-      <Link href="/" className="font-bold text-lg tracking-tight hover:text-orange-100">
-        Super Forum
-      </Link>
+    <header style={{
+      position: 'sticky', top: 0, zIndex: 40,
+      background: 'oklch(0.955 0.012 79 / 0.82)',
+      backdropFilter: 'saturate(1.4) blur(12px)',
+      borderBottom: '1px solid var(--border)',
+    }}>
+      <div style={{
+        maxWidth: 'var(--maxw)', margin: '0 auto', padding: '0 24px',
+        height: 60, display: 'flex', alignItems: 'center', gap: 22,
+      }}>
+        {/* Brand */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'baseline', gap: 9, textDecoration: 'none' }}>
+          <span className="serif" style={{ fontSize: 25, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+            Noema
+          </span>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', alignSelf: 'center', transform: 'translateY(1px)', flexShrink: 0 }} />
+        </Link>
 
-      {/* Categories dropdown */}
-      <div className="relative group">
-        <button className="hover:text-orange-100 text-sm">Categories ▾</button>
-        <div className="absolute left-0 top-full hidden group-hover:block bg-white text-gray-800 shadow-lg rounded min-w-40 z-10">
-          {categories.map((c: { id: string; name: string }) => (
-            <Link
-              key={c.id}
-              href={`/category/${c.id}`}
-              className="block px-4 py-2 hover:bg-orange-50 text-sm"
-            >
-              {c.name}
-            </Link>
-          ))}
+        {/* Search */}
+        <div style={{ flex: 1, maxWidth: 380, position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <span style={{ position: 'absolute', left: 12, color: 'var(--faint)', display: 'flex', pointerEvents: 'none' }}>
+            <SearchIcon />
+          </span>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search threads…"
+            style={{
+              width: '100%', height: 38, paddingLeft: 35, paddingRight: 12,
+              background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 99,
+              fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--ink)', outline: 'none',
+              transition: 'border-color .15s, background .15s',
+            }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--accent)'; e.target.style.background = 'var(--surface)'; }}
+            onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.background = 'var(--surface-2)'; }}
+          />
+        </div>
+
+        {/* Right actions */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 14 }}>
+          {user ? (
+            <>
+              <button onClick={open} style={primaryBtn}>
+                <PlusIcon size={14} /> New post
+              </button>
+              <Link href={`/user/${user.userName}`} style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink-soft)', textDecoration: 'none' }}>
+                {user.userName}
+              </Link>
+              <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'var(--muted)', fontSize: 13, cursor: 'pointer' }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" style={ghostBtn}>Log in</Link>
+              <Link href="/register" style={primaryBtn}>Register</Link>
+            </>
+          )}
         </div>
       </div>
+    </header>
+  );
+}
 
-      <div className="ml-auto flex items-center gap-3 text-sm">
-        {user ? (
-          <>
-            <Link href={`/user/${user.userName}`} className="hover:text-orange-100">
-              {user.userName}
-            </Link>
-            <Link href="/thread/create" className="bg-white text-orange-600 px-3 py-1 rounded font-medium hover:bg-orange-50">
-              + Post
-            </Link>
-            <button onClick={handleLogout} className="hover:text-orange-100">
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link href="/login" className="hover:text-orange-100">Login</Link>
-            <Link href="/register" className="bg-white text-orange-600 px-3 py-1 rounded font-medium hover:bg-orange-50">
-              Register
-            </Link>
-          </>
-        )}
-      </div>
-    </nav>
+export default function NavBar() {
+  return (
+    <Suspense fallback={
+      <header style={{ position: 'sticky', top: 0, zIndex: 40, height: 60, background: 'oklch(0.955 0.012 79 / 0.82)', borderBottom: '1px solid var(--border)' }} />
+    }>
+      <NavBarInner />
+    </Suspense>
   );
 }
