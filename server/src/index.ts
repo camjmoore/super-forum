@@ -39,6 +39,7 @@ const main = async () => {
 
   // Initialize Express app
   const app = express();
+  app.set('trust proxy', 1);
   const router = express.Router();
 
   // Initialize TypeORM Data Source
@@ -70,7 +71,7 @@ const main = async () => {
       legacyHeaders: false,
     })
   );
-  
+
   console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
   // Setup CORS middleware
   app.use(
