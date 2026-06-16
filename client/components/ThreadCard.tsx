@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useMutation } from '@apollo/client/react';
 import { UPDATE_THREAD_POINT } from '@/graphql/mutations';
-import type { UpdateThreadPointMutation, UpdateThreadPointMutationVariables } from '@/graphql/__generated__/graphql';
-import { useAuth } from '@/context/AuthContext';
+import { useVote } from '@/hooks/useVote';
 import VoteRail from '@/components/VoteRail';
 import { CommentIcon, EyeIcon } from '@/components/Icon';
 import { timeAgo, compact } from '@/lib/utils';
@@ -24,27 +22,15 @@ interface Thread {
 }
 
 export default function ThreadCard({ thread, refetch, index = 0 }: { thread: Thread; refetch?: () => void; index?: number }) {
-  const { user } = useAuth();
   const router = useRouter();
   const [hover, setHover] = useState(false);
-  const [localPoints, setLocalPoints] = useState(thread.points);
-  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
 
-  const [updatePoint] = useMutation<UpdateThreadPointMutation, UpdateThreadPointMutationVariables>(UPDATE_THREAD_POINT);
-
-  const handleVote = async (dir: 'up' | 'down') => {
-    if (!user) return;
-    const next = userVote === dir ? null : dir;
-    const increment = dir === 'up';
-    setUserVote(next);
-    setLocalPoints((p) => {
-      if (next === null) return p + (dir === 'up' ? -1 : 1);
-      if (userVote !== null) return p + (dir === 'up' ? 2 : -2);
-      return p + (dir === 'up' ? 1 : -1);
-    });
-    await updatePoint({ variables: { threadId: thread.id, increment } });
-    refetch?.();
-  };
+  const { displayPoints, userVote, handleVote, disabled } = useVote(
+    UPDATE_THREAD_POINT,
+    (increment) => ({ threadId: thread.id, increment }),
+    thread.points,
+    refetch,
+  );
 
   return (
     <article
@@ -64,10 +50,10 @@ export default function ThreadCard({ thread, refetch, index = 0 }: { thread: Thr
     >
       <div onClick={(e) => e.stopPropagation()}>
         <VoteRail
-          points={localPoints}
+          points={displayPoints}
           onUp={() => handleVote('up')}
           onDown={() => handleVote('down')}
-          disabled={!user}
+          disabled={disabled}
           size="md"
           userVote={userVote}
         />

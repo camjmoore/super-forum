@@ -9,19 +9,7 @@ import type { CreateThreadMutation, CreateThreadMutationVariables, GetAllCategor
 import { useCreateModal } from '@/context/CreateModalContext';
 import CategoryPill from '@/components/CategoryPill';
 import { useAuth } from '@/context/AuthContext';
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '10px 12px',
-  background: 'var(--surface-2)',
-  border: '1px solid var(--border)',
-  borderRadius: 'var(--radius-sm)',
-  fontFamily: 'var(--font-sans)',
-  fontSize: 14.5,
-  color: 'var(--ink)',
-  outline: 'none',
-  transition: 'border-color .15s',
-};
+import { inputStyle } from '@/lib/styles';
 
 export default function CreateModal() {
   const { isOpen, close } = useCreateModal();

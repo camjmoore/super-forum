@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useCreateModal } from '@/context/CreateModalContext';
@@ -24,7 +24,6 @@ const ghostBtn: React.CSSProperties = {
 
 function NavBarInner() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, logout } = useAuth();
   const { open } = useCreateModal();
@@ -38,9 +37,8 @@ function NavBarInner() {
     } else {
       params.delete('q');
     }
-    const base = pathname === '/' ? '/' : '/';
-    router.push(base + (params.toString() ? '?' + params.toString() : ''), { scroll: false });
-  }, [searchParams, router, pathname]);
+    router.push('/' + (params.toString() ? '?' + params.toString() : ''), { scroll: false });
+  }, [searchParams, router]);
 
   const handleLogout = async () => {
     await logout();

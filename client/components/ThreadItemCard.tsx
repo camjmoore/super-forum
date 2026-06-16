@@ -1,11 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { useMutation } from '@apollo/client/react';
 import { UPDATE_THREAD_ITEM_POINT } from '@/graphql/mutations';
-import type { UpdateThreadItemPointMutation, UpdateThreadItemPointMutationVariables } from '@/graphql/__generated__/graphql';
-import { useAuth } from '@/context/AuthContext';
+import { useVote } from '@/hooks/useVote';
 import VoteRail from '@/components/VoteRail';
 import { ReplyIcon, ShareIcon } from '@/components/Icon';
 import { timeAgo } from '@/lib/utils';
@@ -20,25 +17,12 @@ interface ThreadItem {
 }
 
 export default function ThreadItemCard({ item, refetch, index = 0 }: { item: ThreadItem; refetch?: () => void; index?: number }) {
-  const { user } = useAuth();
-  const [localPoints, setLocalPoints] = useState(item.points);
-  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
-
-  const [updatePoint] = useMutation<UpdateThreadItemPointMutation, UpdateThreadItemPointMutationVariables>(UPDATE_THREAD_ITEM_POINT);
-
-  const handleVote = async (dir: 'up' | 'down') => {
-    if (!user) return;
-    const next = userVote === dir ? null : dir;
-    const increment = dir === 'up';
-    setUserVote(next);
-    setLocalPoints((p) => {
-      if (next === null) return p + (dir === 'up' ? -1 : 1);
-      if (userVote !== null) return p + (dir === 'up' ? 2 : -2);
-      return p + (dir === 'up' ? 1 : -1);
-    });
-    await updatePoint({ variables: { threadItemId: item.id, increment } });
-    refetch?.();
-  };
+  const { displayPoints, userVote, handleVote, disabled } = useVote(
+    UPDATE_THREAD_ITEM_POINT,
+    (increment) => ({ threadItemId: item.id, increment }),
+    item.points,
+    refetch,
+  );
 
   return (
     <div
@@ -50,10 +34,10 @@ export default function ThreadItemCard({ item, refetch, index = 0 }: { item: Thr
       }}
     >
       <VoteRail
-        points={localPoints}
+        points={displayPoints}
         onUp={() => handleVote('up')}
         onDown={() => handleVote('down')}
-        disabled={!user}
+        disabled={disabled}
         size="sm"
         userVote={userVote}
       />

@@ -120,7 +120,7 @@ function HomeContent() {
           ))}
         </div>
 
-        {totalCount > PAGE_SIZE && (
+        {totalCount > PAGE_SIZE && !q.trim() && (
           <div style={{ display: 'flex', gap: 8, marginTop: 20, alignItems: 'center' }}>
             <button
               onClick={() => handlePage(Math.max(0, offset - PAGE_SIZE))}

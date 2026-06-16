@@ -5,8 +5,9 @@ import { useQuery, useMutation } from '@apollo/client/react';
 import Link from 'next/link';
 import { GET_THREAD_BY_ID } from '@/graphql/queries';
 import { CREATE_THREAD_ITEM, UPDATE_THREAD_POINT } from '@/graphql/mutations';
-import type { GetThreadByIdQuery, GetThreadByIdQueryVariables, CreateThreadItemMutation, CreateThreadItemMutationVariables, UpdateThreadPointMutation, UpdateThreadPointMutationVariables } from '@/graphql/__generated__/graphql';
+import type { GetThreadByIdQuery, GetThreadByIdQueryVariables, CreateThreadItemMutation, CreateThreadItemMutationVariables } from '@/graphql/__generated__/graphql';
 import { useAuth } from '@/context/AuthContext';
+import { useVote } from '@/hooks/useVote';
 import ThreadItemCard from '@/components/ThreadItemCard';
 import VoteRail from '@/components/VoteRail';
 import { BackIcon, BookmarkIcon, ShareIcon, EyeIcon } from '@/components/Icon';
@@ -33,8 +34,6 @@ export default function ThreadPage({ params }: { params: Promise<{ id: string }>
   const [replyFocus, setReplyFocus] = useState(false);
   const [replyError, setReplyError] = useState('');
   const [commentSort, setCommentSort] = useState<'top' | 'new'>('top');
-  const [threadVote, setThreadVote] = useState<'up' | 'down' | null>(null);
-  const [localPoints, setLocalPoints] = useState<number | null>(null);
 
   const { data, loading, error, refetch } = useQuery<GetThreadByIdQuery, GetThreadByIdQueryVariables>(GET_THREAD_BY_ID, {
     variables: { threadId: id },
@@ -42,40 +41,33 @@ export default function ThreadPage({ params }: { params: Promise<{ id: string }>
   });
 
   const [createThreadItem, { loading: replying }] = useMutation<CreateThreadItemMutation, CreateThreadItemMutationVariables>(CREATE_THREAD_ITEM);
-  const [updatePoint] = useMutation<UpdateThreadPointMutation, UpdateThreadPointMutationVariables>(UPDATE_THREAD_POINT);
 
   const result = data?.getThreadById;
   const thread = result?.__typename === 'Thread' ? result : null;
   const messages = result?.__typename === 'EntityResult' ? (result.messages ?? []) : [];
 
-  const displayPoints = localPoints !== null ? localPoints : (thread?.points ?? 0);
-
-  const handleThreadVote = async (dir: 'up' | 'down') => {
-    if (!user || !thread) return;
-    const next = threadVote === dir ? null : dir;
-    const increment = dir === 'up';
-    setThreadVote(next);
-    setLocalPoints((p) => {
-      const base = p !== null ? p : thread.points;
-      if (next === null) return base + (dir === 'up' ? -1 : 1);
-      if (threadVote !== null) return base + (dir === 'up' ? 2 : -2);
-      return base + (dir === 'up' ? 1 : -1);
-    });
-    await updatePoint({ variables: { threadId: thread.id, increment } });
-    refetch();
-  };
+  const { displayPoints, userVote: threadVote, handleVote: handleThreadVote, disabled: voteDisabled } = useVote(
+    UPDATE_THREAD_POINT,
+    (increment) => ({ threadId: id, increment }),
+    thread?.points ?? 0,
+    refetch,
+  );
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
     setReplyError('');
-    const { data: res } = await createThreadItem({ variables: { threadId: id, body: replyBody } });
-    const msg = res?.createThreadItem?.messages?.[0] ?? '';
-    if (msg.toLowerCase().includes('success') || msg.toLowerCase().includes('created')) {
-      setReplyBody('');
-      setReplyFocus(false);
-      refetch();
-    } else {
-      setReplyError(msg || 'Failed to post reply.');
+    try {
+      const { data: res } = await createThreadItem({ variables: { threadId: id, body: replyBody } });
+      const msg = res?.createThreadItem?.messages?.[0] ?? '';
+      if (msg.toLowerCase().includes('success') || msg.toLowerCase().includes('created')) {
+        setReplyBody('');
+        setReplyFocus(false);
+        refetch();
+      } else {
+        setReplyError(msg || 'Failed to post reply.');
+      }
+    } catch {
+      setReplyError('Network error — please try again.');
     }
   };
 
@@ -108,7 +100,7 @@ export default function ThreadPage({ params }: { params: Promise<{ id: string }>
               points={displayPoints}
               onUp={() => handleThreadVote('up')}
               onDown={() => handleThreadVote('down')}
-              disabled={!user}
+              disabled={voteDisabled}
               size="md"
               userVote={threadVote}
             />
@@ -149,7 +141,7 @@ export default function ThreadPage({ params }: { params: Promise<{ id: string }>
 
             <div className="serif" style={{ fontSize: 18, lineHeight: 1.7, color: 'var(--ink)' }}>
               {thread.body.split('\n\n').map((para, i) => (
-                <p key={i} style={{ margin: '0 0 1em' }}>{para}</p>
+                <p key={i} style={{ margin: i === 0 ? '0 0 1em' : '0 0 1em' }}>{para}</p>
               ))}
             </div>
           </div>
@@ -184,35 +176,37 @@ export default function ThreadPage({ params }: { params: Promise<{ id: string }>
           borderRadius: 'var(--radius)', padding: 16, margin: '14px 0 8px',
           transition: 'border-color .15s',
         }}>
-          <div style={{ flex: 1 }}>
-            <textarea
-              value={replyBody}
-              onChange={(e) => setReplyBody(e.target.value)}
-              onFocus={() => setReplyFocus(true)}
-              placeholder="Add a thoughtful response…"
-              rows={replyFocus || replyBody ? 3 : 1}
-              className="composer-textarea"
-              style={{
-                width: '100%', resize: 'none', border: 'none', outline: 'none', background: 'transparent',
-                fontFamily: 'var(--font-sans)', fontSize: 14.5, lineHeight: 1.55, color: 'var(--ink)', padding: '4px 0',
-              }}
-            />
-            {(replyFocus || replyBody) && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-                <span className="meta" style={{ fontSize: 11 }}>Be generous. Be specific.</span>
-                {replyError && <span style={{ color: 'oklch(0.55 0.18 25)', fontSize: 12, marginRight: 'auto', marginLeft: 12 }}>{replyError}</span>}
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => { setReplyBody(''); setReplyFocus(false); }} style={ghostBtn}>Cancel</button>
-                  <button
-                    onClick={handleReply}
-                    disabled={!replyBody.trim() || replying}
-                    style={{ ...primaryBtn, opacity: replyBody.trim() && !replying ? 1 : 0.45 }}
-                  >
-                    {replying ? 'Posting…' : 'Respond'}
-                  </button>
+          <div style={{ display: 'flex', gap: 11 }}>
+            <div style={{ flex: 1 }}>
+              <textarea
+                value={replyBody}
+                onChange={(e) => setReplyBody(e.target.value)}
+                onFocus={() => setReplyFocus(true)}
+                placeholder="Add a thoughtful response…"
+                rows={replyFocus || replyBody ? 3 : 1}
+                className="composer-textarea"
+                style={{
+                  width: '100%', resize: 'none', border: 'none', outline: 'none', background: 'transparent',
+                  fontFamily: 'var(--font-sans)', fontSize: 14.5, lineHeight: 1.55, color: 'var(--ink)', padding: '4px 0',
+                }}
+              />
+              {(replyFocus || replyBody) && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                  <span className="meta" style={{ fontSize: 11 }}>Be generous. Be specific.</span>
+                  {replyError && <span style={{ color: 'oklch(0.55 0.18 25)', fontSize: 12, marginRight: 'auto', marginLeft: 12 }}>{replyError}</span>}
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => { setReplyBody(''); setReplyFocus(false); }} style={ghostBtn}>Cancel</button>
+                    <button
+                      onClick={handleReply}
+                      disabled={!replyBody.trim() || replying}
+                      style={{ ...primaryBtn, opacity: replyBody.trim() && !replying ? 1 : 0.45 }}
+                    >
+                      {replying ? 'Posting…' : 'Respond'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       ) : (
