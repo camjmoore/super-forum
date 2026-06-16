@@ -23,18 +23,31 @@ export default function ConfirmPage({ params }: { params: Promise<{ token: strin
   }, [token, confirmUser]);
 
   return (
-    <div className="max-w-sm mx-auto mt-10 bg-white rounded border border-gray-200 p-6 text-center">
-      {!message && <p className="text-gray-500 text-sm">Confirming your account…</p>}
-      {message && (
-        <>
-          <p className={`text-sm mb-4 ${confirmed ? 'text-green-600' : 'text-red-600'}`}>{message}</p>
-          {confirmed && (
-            <Link href="/login" className="bg-orange-500 text-white px-4 py-2 rounded text-sm hover:bg-orange-600">
-              Log In
-            </Link>
-          )}
-        </>
-      )}
+    <div style={{ maxWidth: 400, margin: '0 auto' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-pop)', padding: 32, textAlign: 'center' }}>
+        {!message && (
+          <p style={{ color: 'var(--muted)', fontSize: 14 }}>Confirming your account…</p>
+        )}
+        {message && (
+          <>
+            <p style={{
+              fontSize: 14.5, marginBottom: 20,
+              color: confirmed ? 'oklch(0.50 0.14 145)' : 'oklch(0.55 0.18 25)',
+            }}>
+              {message}
+            </p>
+            {confirmed && (
+              <Link href="/login" style={{
+                display: 'inline-flex', alignItems: 'center', height: 40, padding: '0 20px',
+                borderRadius: 99, border: 'none', background: 'var(--accent)', color: '#fff',
+                fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 600, textDecoration: 'none',
+              }}>
+                Log in
+              </Link>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
