@@ -95,8 +95,8 @@ const main = async () => {
       cookie: {
         path: '/',
         httpOnly: true,
-        sameSite: 'none',
-        secure: false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60 * 24,
       },
     })
