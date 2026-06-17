@@ -5,7 +5,6 @@ import {
 } from '../../types/resolvers-types.generated';
 import { ApolloContext } from '../../types/IApolloContext';
 
-// Points Mutation Resolvers
 export const pointsMutations: Pick<
   MutationResolvers<ApolloContext>,
   'updateThreadPoint' | 'updateThreadItemPoint'
@@ -45,14 +44,13 @@ export const pointsMutations: Pick<
   },
 };
 
-// ThreadPoint Field Resolvers - for resolving related data
 export const threadPointFieldResolvers: ThreadPointResolvers<ApolloContext> = {
-  user: async (parent, _, { repository }) => {
+  user: async (parent, _, { loaders }) => {
     const userId = parent.user?.id;
     if (!userId) throw new Error('User not found');
-    const result = await repository.getUserById(userId);
-    if (!result.user) throw new Error('User not found');
-    return result.user;
+    const user = await loaders.userLoader.load(userId);
+    if (!user) throw new Error('User not found');
+    return user;
   },
 
   thread: async (parent, _, { repository }) => {
@@ -62,25 +60,16 @@ export const threadPointFieldResolvers: ThreadPointResolvers<ApolloContext> = {
     if (!result.entity) throw new Error('Thread not found');
     return result.entity;
   },
-
-  // Other fields are automatically resolved by GraphQL
-  id: (parent) => parent.id,
-  isDecrement: (parent) => parent.isDecrement,
-  createdBy: (parent) => parent.createdBy,
-  createdOn: (parent) => parent.createdOn,
-  lastModifiedBy: (parent) => parent.lastModifiedBy,
-  lastModifiedOn: (parent) => parent.lastModifiedOn,
 };
 
-// ThreadItemPoint Field Resolvers - for resolving related data
 export const threadItemPointFieldResolvers: ThreadItemPointResolvers<ApolloContext> =
   {
-    user: async (parent, _, { repository }) => {
+    user: async (parent, _, { loaders }) => {
       const userId = parent.user?.id;
       if (!userId) throw new Error('User not found');
-      const result = await repository.getUserById(userId);
-      if (!result.user) throw new Error('User not found');
-      return result.user;
+      const user = await loaders.userLoader.load(userId);
+      if (!user) throw new Error('User not found');
+      return user;
     },
 
     threadItem: async (parent, _, { repository }) => {
@@ -90,12 +79,4 @@ export const threadItemPointFieldResolvers: ThreadItemPointResolvers<ApolloConte
       if (!result.entity) throw new Error('Thread item not found');
       return result.entity;
     },
-
-    // Other fields are automatically resolved by GraphQL
-    id: (parent) => parent.id,
-    isDecrement: (parent) => parent.isDecrement,
-    createdBy: (parent) => parent.createdBy,
-    createdOn: (parent) => parent.createdOn,
-    lastModifiedBy: (parent) => parent.lastModifiedBy,
-    lastModifiedOn: (parent) => parent.lastModifiedOn,
   };

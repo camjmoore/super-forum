@@ -9,6 +9,7 @@ import Redis from 'ioredis';
 import dataSource from './data-source';
 import { repository } from './repository';
 import { createApolloServer } from './apollo';
+import { createLoaders } from './loaders';
 import { expressMiddleware } from '@as-integrations/express5';
 
 declare global {
@@ -128,6 +129,7 @@ const main = async () => {
         dataSource,
         redis: redisClient,
         repository,
+        loaders: createLoaders(),
       }),
     })
   );

@@ -6,7 +6,6 @@ import {
 } from '../../types/resolvers-types.generated';
 import { ApolloContext } from '../../types/IApolloContext';
 
-// ThreadItem Query Resolvers
 export const threadItemQueries: Pick<
   QueryResolvers<ApolloContext>,
   'getThreadItemByThreadId'
@@ -19,20 +18,13 @@ export const threadItemQueries: Pick<
     const { entities, messages } = await getThreadItemByThreadId(threadId);
 
     if (entities) {
-      return {
-        __typename: 'ThreadItemArray',
-        threadItems: [...entities],
-      };
+      return { threadItems: [...entities] };
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages,
-    };
+    return { messages };
   },
 };
 
-// ThreadItem Mutation Resolvers
 export const threadItemMutations: Pick<
   MutationResolvers<ApolloContext>,
   'createThreadItem'
@@ -41,8 +33,8 @@ export const threadItemMutations: Pick<
     const userId = req.session?.userId;
 
     if (!userId) {
-        return { __typename: 'EntityResult', messages: ['You must be logged in.']}
-      }
+      return { messages: ['You must be logged in.'] };
+    }
 
     const { messages } = await repository.createThreadItem(
       userId,
@@ -50,21 +42,17 @@ export const threadItemMutations: Pick<
       body ?? ''
     );
 
-    return {
-      __typename: 'EntityResult',
-      messages: messages,
-    };
+    return { messages };
   },
 };
 
-// ThreadItem Field Resolvers - for resolving related data
 export const threadItemFieldResolvers: ThreadItemResolvers<ApolloContext> = {
-  user: async (parent, _, { repository }) => {
+  user: async (parent, _, { loaders }) => {
     const userId = parent.user?.id;
     if (!userId) throw new Error('User not found');
-    const result = await repository.getUserById(userId);
-    if (!result.user) throw new Error('User not found');
-    return result.user;
+    const user = await loaders.userLoader.load(userId);
+    if (!user) throw new Error('User not found');
+    return user;
   },
 
   thread: async (parent, _, { repository }) => {
@@ -74,15 +62,4 @@ export const threadItemFieldResolvers: ThreadItemResolvers<ApolloContext> = {
     if (!result.entity) throw new Error('Thread not found');
     return result.entity;
   },
-
-  // Other fields are automatically resolved by GraphQL
-  id: (parent) => parent.id,
-  views: (parent) => parent.views,
-  points: (parent) => parent.points,
-  isDisabled: (parent) => parent.isDisabled,
-  body: (parent) => parent.body,
-  createdBy: (parent) => parent.createdBy,
-  createdOn: (parent) => parent.createdOn,
-  lastModifiedBy: (parent) => parent.lastModifiedBy,
-  lastModifiedOn: (parent) => parent.lastModifiedOn,
 };

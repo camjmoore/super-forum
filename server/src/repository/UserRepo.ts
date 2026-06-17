@@ -90,7 +90,7 @@ export const login = async (
 };
 
 export const logout = async (userName: string): Promise<Array<string>> => {
-  const user = User.findOne({
+  const user = await User.findOne({
     where: { userName },
   });
 

@@ -6,32 +6,22 @@ import {
 } from '../../types/resolvers-types.generated';
 import { ApolloContext } from '../../types/IApolloContext';
 
-// User Query Resolvers
 export const userQueries: Pick<
   QueryResolvers<ApolloContext>,
   'me' | 'getUserByUserName'
 > = {
   me: async (_, __, { req, repository }): Promise<UserResult> => {
     if (!req.session?.userId) {
-      return {
-        __typename: 'EntityResult',
-        messages: ['User not authenticated'],
-      };
+      return { messages: ['User not authenticated'] };
     }
 
     const result = await repository.getUserById(req.session.userId);
 
     if (result.user) {
-      return {
-        __typename: 'User',
-        ...result.user,
-      };
+      return result.user;
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages: result.messages || ['User not found'],
-    };
+    return { messages: result.messages || ['User not found'] };
   },
 
   getUserByUserName: async (
@@ -42,20 +32,13 @@ export const userQueries: Pick<
     const result = await repository.getUserByUserName(userName);
 
     if (result.user) {
-      return {
-        __typename: 'User',
-        ...result.user,
-      };
+      return result.user;
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages: result.messages || ['User not found'],
-    };
+    return { messages: result.messages || ['User not found'] };
   },
 };
 
-// User Mutation Resolvers
 export const userMutations: Pick<
   MutationResolvers<ApolloContext>,
   'register' | 'login' | 'logout' | 'changePassword' | 'confirmUser'
@@ -68,16 +51,10 @@ export const userMutations: Pick<
     const result = await repository.register(email, userName, password);
 
     if (result.user) {
-      return {
-        __typename: 'User',
-        ...result.user,
-      };
+      return result.user;
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages: result.messages || ['Registration failed'],
-    };
+    return { messages: result.messages || ['Registration failed'] };
   },
 
   login: async (_, { userName, password }, { req, repository }) => {
@@ -119,7 +96,6 @@ export const userMutations: Pick<
   },
 };
 
-// User Field Resolvers - for resolving related data
 export const userFieldResolvers: UserResolvers<ApolloContext> = {
   threads: async (parent, _, { repository }) => {
     const result = await repository.getUserThreads(parent.id);
@@ -130,16 +106,4 @@ export const userFieldResolvers: UserResolvers<ApolloContext> = {
     const result = await repository.getUserThreadItems(parent.id);
     return result.entities || [];
   },
-
-  // Other fields are automatically resolved by GraphQL
-  id: (parent) => parent.id,
-  email: (parent) => parent.email,
-  userName: (parent) => parent.userName,
-  password: (parent) => parent.password,
-  confirmed: (parent) => parent.confirmed,
-  isDisabled: (parent) => parent.isDisabled,
-  createdBy: (parent) => parent.createdBy,
-  createdOn: (parent) => parent.createdOn,
-  lastModifiedBy: (parent) => parent.lastModifiedBy,
-  lastModifiedOn: (parent) => parent.lastModifiedOn,
 };

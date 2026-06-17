@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Redis } from 'ioredis';
 import { DataSource } from 'typeorm';
 import { Repositories } from './repository-types';
+import { Loaders } from '../loaders';
 
 export interface ApolloContext {
   req: Request & {
@@ -13,4 +14,5 @@ export interface ApolloContext {
   dataSource: DataSource;
   redis: Redis;
   repository: Repositories;
+  loaders: Loaders;
 }

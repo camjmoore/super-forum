@@ -3,6 +3,17 @@ import { createApolloServer } from '../../apollo';
 import { ApolloContext } from '../../types/IApolloContext';
 import { Repositories } from '../../types/repository-types';
 
+type SingleBody = {
+  kind: 'single';
+  singleResult: { data?: Record<string, unknown> | null };
+};
+
+function singleData(res: { body: unknown }): Record<string, unknown> | null | undefined {
+  const body = res.body as SingleBody;
+  if (body.kind !== 'single') throw new Error('Expected single result');
+  return body.singleResult.data;
+}
+
 // Minimal mock context — only the fields resolvers actually touch
 const makeContext = (userId?: string): ApolloContext =>
   ({
@@ -95,7 +106,7 @@ describe('Mutation.register', () => {
     );
 
     expect(res.body.kind).toBe('single');
-    const data = (res.body as any).singleResult.data?.register;
+    const data = singleData(res)?.register as Record<string, unknown>;
     expect(data.__typename).toBe('User');
     expect(data.email).toBe('a@b.com');
   });
@@ -113,9 +124,9 @@ describe('Mutation.register', () => {
       { contextValue: makeContext() }
     );
 
-    const data = (res.body as any).singleResult.data?.register;
+    const data = singleData(res)?.register as Record<string, unknown>;
     expect(data.__typename).toBe('EntityResult');
-    expect(data.messages[0]).toMatch(/passwords must have/);
+    expect((data.messages as string[])[0]).toMatch(/passwords must have/);
   });
 });
 
@@ -138,7 +149,7 @@ describe('Mutation.login', () => {
       { contextValue: makeContext() }
     );
 
-    expect((res.body as any).singleResult.data?.login).toMatch(/logged in/);
+    expect(singleData(res)?.login).toMatch(/logged in/);
   });
 
   it('returns error message on invalid credentials', async () => {
@@ -151,7 +162,7 @@ describe('Mutation.login', () => {
       { contextValue: makeContext() }
     );
 
-    expect((res.body as any).singleResult.data?.login).toBe('Password is invalid.');
+    expect(singleData(res)?.login).toBe('Password is invalid.');
   });
 
   it('rejects unconfirmed user', async () => {
@@ -164,7 +175,7 @@ describe('Mutation.login', () => {
       { contextValue: makeContext() }
     );
 
-    expect((res.body as any).singleResult.data?.login).toMatch(/confirmed/);
+    expect(singleData(res)?.login).toMatch(/confirmed/);
   });
 });
 
@@ -189,9 +200,9 @@ describe('Mutation.createThread', () => {
       { contextValue: makeContext() }
     );
 
-    const data = (res.body as any).singleResult.data?.createThread;
+    const data = singleData(res)?.createThread as Record<string, unknown>;
     expect(data.__typename).toBe('EntityResult');
-    expect(data.messages[0]).toMatch(/logged in/);
+    expect((data.messages as string[])[0]).toMatch(/logged in/);
     expect(mockRepo.createThread).not.toHaveBeenCalled();
   });
 
@@ -209,8 +220,8 @@ describe('Mutation.createThread', () => {
     );
 
     expect(mockRepo.createThread).toHaveBeenCalledWith('user-1', '1', 'Test', 'Hello');
-    const data = (res.body as any).singleResult.data?.createThread;
-    expect(data.messages[0]).toMatch(/created successfully/);
+    const data = singleData(res)?.createThread as Record<string, unknown>;
+    expect((data.messages as string[])[0]).toMatch(/created successfully/);
   });
 });
 
@@ -253,10 +264,10 @@ describe('Query.getThreadsByCategoryId', () => {
       { contextValue: makeContext() }
     );
 
-    const data = (res.body as any).singleResult.data?.getThreadsByCategoryId;
+    const data = singleData(res)?.getThreadsByCategoryId as Record<string, unknown>;
     expect(data.__typename).toBe('ThreadArray');
-    expect(data.threads).toHaveLength(1);
-    expect(data.threads[0].title).toBe('Hello');
+    expect((data.threads as unknown[]).length).toBe(1);
+    expect((data.threads as Record<string, unknown>[])[0].title).toBe('Hello');
   });
 
   it('calls repository with the given categoryId', async () => {
@@ -282,7 +293,7 @@ describe('Query.getThreadsByCategoryId', () => {
       { contextValue: makeContext() }
     );
 
-    const data = (res.body as any).singleResult.data?.getThreadsByCategoryId;
+    const data = singleData(res)?.getThreadsByCategoryId as Record<string, unknown>;
     expect(data.__typename).toBe('EntityResult');
   });
 });
@@ -304,7 +315,7 @@ describe('Mutation.confirmUser', () => {
       { contextValue: makeContext() }
     );
 
-    expect((res.body as any).singleResult.data?.confirmUser).toBe('User confirmed successfully.');
+    expect(singleData(res)?.confirmUser).toBe('User confirmed successfully.');
   });
 
   it('returns error message on invalid token', async () => {
@@ -315,7 +326,7 @@ describe('Mutation.confirmUser', () => {
       { contextValue: makeContext() }
     );
 
-    expect((res.body as any).singleResult.data?.confirmUser).toMatch(/Invalid or expired/);
+    expect(singleData(res)?.confirmUser).toMatch(/Invalid or expired/);
   });
 });
 
@@ -353,7 +364,7 @@ describe('Query.getUserByUserName', () => {
       { contextValue: makeContext() }
     );
 
-    const data = (res.body as any).singleResult.data?.getUserByUserName;
+    const data = singleData(res)?.getUserByUserName as Record<string, unknown>;
     expect(data.__typename).toBe('User');
     expect(data.userName).toBe('alice');
   });
@@ -368,7 +379,7 @@ describe('Query.getUserByUserName', () => {
       { contextValue: makeContext() }
     );
 
-    const data = (res.body as any).singleResult.data?.getUserByUserName;
+    const data = singleData(res)?.getUserByUserName as Record<string, unknown>;
     expect(data.__typename).toBe('EntityResult');
   });
 });
