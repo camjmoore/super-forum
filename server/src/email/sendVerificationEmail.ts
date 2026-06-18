@@ -22,8 +22,8 @@ export const sendVerificationEmail = async (
   const token = generateVerificationToken(userId);
   const confirmUrl = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/confirm/${token}`;
   const from =
-    process.env.EMAIL_FROM || '"Super Forum" <noreply@super-forum.dev>';
-  const subject = 'Confirm your Super Forum registration';
+    process.env.EMAIL_FROM || '"Noema Forum" <noreply@noema-forum.dev>';
+  const subject = 'Confirm your Noema Forum registration';
   const html = `<p>Click <a href="${confirmUrl}">here</a> to confirm your email address. This link expires in 24 hours.</p>`;
 
   if (process.env.RESEND_API_KEY) {
