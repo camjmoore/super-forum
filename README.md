@@ -1,4 +1,4 @@
-# Super Forum
+# Noema Forum
 
 A full-stack Reddit-style discussion forum built with Node.js, GraphQL, TypeScript, and Next.js.
 
@@ -68,7 +68,7 @@ npm run dev
 ## Project Structure
 
 ```
-super-forum/
+noema-forum/
 ├── server/            # GraphQL API
 │   ├── src/
 │   │   ├── resolvers/ # GraphQL resolvers
