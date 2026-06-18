@@ -67,7 +67,10 @@ export const createThread = async (
 export const getThreadById = async (
   id: string
 ): Promise<QuerySingleResult<Thread>> => {
-  const thread = await Thread.findOne({ where: { id } });
+  const thread = await Thread.findOne({
+    where: { id },
+    relations: ['user', 'threadCategory'],
+  });
 
   if (!thread) {
     return {
@@ -87,6 +90,7 @@ export const getThreadsByCategoryId = async (
 ): Promise<QueryArrayResult<Thread>> => {
   const [threads, count] = await Thread.createQueryBuilder('thread')
     .where('thread.threadCategory = :categoryId', { categoryId })
+    .leftJoinAndSelect('thread.user', 'user')
     .leftJoinAndSelect('thread.threadCategory', 'threadCategory')
     .orderBy('thread.createdOn', 'DESC')
     .take(limit)
@@ -113,6 +117,7 @@ export const getThreadsLatest = async (
   startDate.setHours(startDate.getHours() - 24);
 
   const [threads, count] = await Thread.createQueryBuilder('thread')
+    .leftJoinAndSelect('thread.user', 'user')
     .leftJoinAndSelect('thread.threadCategory', 'threadCategory')
     .where('thread.createdOn >= :startDate', { startDate })
     .orderBy('thread.createdOn', 'DESC')

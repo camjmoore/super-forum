@@ -24,7 +24,7 @@ export function createLoaders() {
     async (threadIds) => {
       const items = await ThreadItem.find({
         where: { thread: { id: In([...threadIds]) } },
-        relations: ['thread'],
+        relations: ['thread', 'user'],
       });
       const map = new Map<string, ThreadItem[]>();
       for (const item of items) {
