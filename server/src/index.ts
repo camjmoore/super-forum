@@ -67,7 +67,7 @@ const main = async () => {
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 200,
+      max: 1000,
       standardHeaders: true,
       legacyHeaders: false,
     })
@@ -115,7 +115,7 @@ const main = async () => {
     '/graphql',
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 50,
+      max: 300,
       standardHeaders: true,
       legacyHeaders: false,
     })
