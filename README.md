@@ -9,7 +9,7 @@ A full-stack Reddit-style discussion forum built with Node.js, GraphQL, TypeScri
 | **API** | Apollo Server 4, GraphQL, Express |
 | **ORM** | TypeORM, PostgreSQL 16 |
 | **Auth** | express-session, Redis, bcryptjs |
-| **Email** | Nodemailer (Ethereal in dev, SMTP in prod) |
+| **Email** | Resend HTTP API in prod, Nodemailer + Ethereal in dev |
 | **Frontend** | Next.js 16 (App Router), Apollo Client v4 |
 | **Styling** | Tailwind CSS |
 | **Testing** | Jest, ts-jest |
@@ -99,7 +99,7 @@ Copy `.env.example` and adjust for your environment.
 | `REDIS_PASSWORD` | *(empty)* | Redis password (required in prod) |
 | `CORS_ORIGIN` | `http://localhost:3000` | Frontend origin |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:4000/graphql` | API URL baked into the client bundle at build time |
-| `SMTP_HOST` | *(unset)* | SMTP host for transactional email |
+| `RESEND_API_KEY` | *(unset)* | Resend API key for transactional email |
 | `PG_SYNCHRONIZE` | `true` | Set to `false` in production |
 
 ## Running Tests
@@ -117,7 +117,7 @@ The test suite uses mocked repositories — no database required.
 ```bash
 cp .env.example .env
 # Edit .env: set SESSION_SECRET, JWT_SECRET, PG_PASSWORD, REDIS_PASSWORD,
-#            CORS_ORIGIN, NEXT_PUBLIC_API_URL, SMTP_*
+#            CORS_ORIGIN, NEXT_PUBLIC_API_URL, RESEND_API_KEY, EMAIL_FROM
 
 docker compose -f docker-compose.prod.yml up -d
 ```
