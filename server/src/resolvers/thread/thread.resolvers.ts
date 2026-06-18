@@ -16,16 +16,10 @@ export const threadQueries: Pick<
     const { entity, messages } = await getThreadById(threadId);
 
     if (entity) {
-      return {
-        __typename: 'Thread',
-        ...entity,
-      };
+      return entity;
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages,
-    };
+    return { messages };
   },
 
   getThreadsByCategoryId: async (
@@ -41,16 +35,12 @@ export const threadQueries: Pick<
 
     if (entities) {
       return {
-        __typename: 'ThreadArray',
         threads: [...entities],
         totalCount: count ?? entities.length,
       };
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages,
-    };
+    return { messages };
   },
 
   getThreadsLatest: async (
@@ -65,16 +55,12 @@ export const threadQueries: Pick<
 
     if (entities) {
       return {
-        __typename: 'ThreadArray',
         threads: [...entities],
         totalCount: count ?? entities.length,
       };
     }
 
-    return {
-      __typename: 'EntityResult',
-      messages,
-    };
+    return { messages };
   },
 
   getTopCategoryThread: async (_, __, { repository }) => {
@@ -93,10 +79,7 @@ export const threadMutations: Pick<
     { req, repository: { createThread } }
   ) => {
     if (!req.session?.userId) {
-      return {
-        __typename: 'EntityResult',
-        messages: ['You must be logged in to create a thread'],
-      };
+      return { messages: ['You must be logged in to create a thread'] };
     }
 
     const { messages } = await createThread(
@@ -106,53 +89,28 @@ export const threadMutations: Pick<
       body
     );
 
-    return {
-      __typename: 'EntityResult',
-      messages: messages,
-    };
+    return { messages };
   },
 };
 
-// Thread Field Resolvers - for resolving related data
 export const threadFieldResolvers: ThreadResolvers<ApolloContext> = {
-  user: async (parent, _, { req, repository }) => {
-    const userId = parent.user?.id ?? req.session.userId;
-    if (!userId) {
-      throw new Error('User not found');
-    }
-    const result = await repository.getUserById(userId);
-    if (!result.user) {
-      throw new Error('User not found');
-    }
-    return result.user;
+  user: async (parent, _, { loaders }) => {
+    const userId = parent.user?.id;
+    if (!userId) throw new Error('User not found');
+    const user = await loaders.userLoader.load(userId);
+    if (!user) throw new Error('User not found');
+    return user;
   },
 
-  threadCategory: async (parent, _, { repository }) => {
+  threadCategory: async (parent, _, { loaders }) => {
     const categoryId = parent.threadCategory?.id;
-    if (!categoryId) {
-      throw new Error('Thread category not found');
-    }
-    const result = await repository.getCategoryById(categoryId);
-    if (!result.entity) {
-      throw new Error('Thread category not found');
-    }
-    return result.entity;
+    if (!categoryId) throw new Error('Thread category not found');
+    const category = await loaders.categoryLoader.load(categoryId);
+    if (!category) throw new Error('Thread category not found');
+    return category;
   },
 
-  threadItems: async (parent, _, { repository }) => {
-    const result = await repository.getThreadItemByThreadId(parent.id);
-    return result.entities || [];
+  threadItems: async (parent, _, { loaders }) => {
+    return loaders.threadItemsLoader.load(parent.id);
   },
-
-  // Other fields are automatically resolved by GraphQL
-  id: (parent) => parent.id,
-  views: (parent) => parent.views,
-  points: (parent) => parent.points,
-  isDisabled: (parent) => parent.isDisabled,
-  title: (parent) => parent.title,
-  body: (parent) => parent.body,
-  createdBy: (parent) => parent.createdBy,
-  createdOn: (parent) => parent.createdOn,
-  lastModifiedBy: (parent) => parent.lastModifiedBy,
-  lastModifiedOn: (parent) => parent.lastModifiedOn,
 };

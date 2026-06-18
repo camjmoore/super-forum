@@ -240,7 +240,6 @@ export type User = {
   isDisabled: Scalars['Boolean']['output'];
   lastModifiedBy: Scalars['String']['output'];
   lastModifiedOn: Scalars['Date']['output'];
-  password: Scalars['String']['output'];
   threadItems?: Maybe<Array<ThreadItem>>;
   threads?: Maybe<Array<Thread>>;
   userName: Scalars['String']['output'];
@@ -530,7 +529,6 @@ export type UserResolvers<ContextType = ApolloContext, ParentType extends Resolv
   isDisabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastModifiedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastModifiedOn?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   threadItems?: Resolver<Maybe<Array<ResolversTypes['ThreadItem']>>, ParentType, ContextType>;
   threads?: Resolver<Maybe<Array<ResolversTypes['Thread']>>, ParentType, ContextType>;
   userName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

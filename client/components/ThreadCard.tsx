@@ -9,7 +9,7 @@ import VoteRail from '@/components/VoteRail';
 import { CommentIcon, EyeIcon } from '@/components/Icon';
 import { timeAgo, compact } from '@/lib/utils';
 
-interface Thread {
+export interface Thread {
   id: string;
   title: string;
   body: string;

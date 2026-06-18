@@ -9,6 +9,7 @@ import Redis from 'ioredis';
 import dataSource from './data-source';
 import { repository } from './repository';
 import { createApolloServer } from './apollo';
+import { createLoaders } from './loaders';
 import { expressMiddleware } from '@as-integrations/express5';
 
 declare global {
@@ -39,6 +40,7 @@ const main = async () => {
 
   // Initialize Express app
   const app = express();
+  app.set('trust proxy', 1);
   const router = express.Router();
 
   // Initialize TypeORM Data Source
@@ -65,12 +67,12 @@ const main = async () => {
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 200,
+      max: 1000,
       standardHeaders: true,
       legacyHeaders: false,
     })
   );
-  
+
   console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
   // Setup CORS middleware
   app.use(
@@ -94,8 +96,8 @@ const main = async () => {
       cookie: {
         path: '/',
         httpOnly: true,
-        sameSite: 'none',
-        secure: false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60 * 24,
       },
     })
@@ -113,7 +115,7 @@ const main = async () => {
     '/graphql',
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 50,
+      max: 300,
       standardHeaders: true,
       legacyHeaders: false,
     })
@@ -127,6 +129,7 @@ const main = async () => {
         dataSource,
         redis: redisClient,
         repository,
+        loaders: createLoaders(),
       }),
     })
   );

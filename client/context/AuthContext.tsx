@@ -1,10 +1,14 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
-import { ME } from '@/graphql/queries';
-import { LOGOUT } from '@/graphql/mutations';
-import type { MeQuery, LogoutMutation, LogoutMutationVariables } from '@/graphql/__generated__/graphql';
+import { createContext, useContext, useEffect, useState } from "react";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client/react";
+import { ME } from "@/graphql/queries";
+import { LOGOUT } from "@/graphql/mutations";
+import type {
+  MeQuery,
+  LogoutMutation,
+  LogoutMutationVariables,
+} from "@/graphql/__generated__/graphql";
 
 interface AuthUser {
   id: string;
@@ -30,11 +34,15 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const apolloClient = useApolloClient();
   const [user, setUser] = useState<AuthUser | null>(null);
-  const { data, loading, refetch } = useQuery<MeQuery>(ME, { fetchPolicy: 'network-only' });
-  const [logoutMutation] = useMutation<LogoutMutation, LogoutMutationVariables>(LOGOUT);
+  const { data, loading, refetch } = useQuery<MeQuery>(ME, {
+    fetchPolicy: "cache-first",
+  });
+  const [logoutMutation] = useMutation<LogoutMutation, LogoutMutationVariables>(
+    LOGOUT,
+  );
 
   useEffect(() => {
-    if (data?.me?.__typename === 'User') {
+    if (data?.me?.__typename === "User") {
       setUser(data.me);
     } else {
       setUser(null);

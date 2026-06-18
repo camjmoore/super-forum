@@ -3,11 +3,11 @@
 import { Suspense, useMemo } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import Link from 'next/link';
 import { GET_THREADS_LATEST, GET_ALL_CATEGORIES } from '@/graphql/queries';
 import type { GetThreadsLatestQuery, GetThreadsLatestQueryVariables, GetAllCategoriesQuery } from '@/graphql/__generated__/graphql';
-import ThreadCard from '@/components/ThreadCard';
+import ThreadCard, { type Thread } from '@/components/ThreadCard';
 import Panel from '@/components/Panel';
 
 const PAGE_SIZE = 10;
@@ -24,7 +24,8 @@ function HomeContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [offset, setOffset] = useState(0);
+  const page = Math.max(0, parseInt(searchParams.get('page') ?? '0', 10));
+  const offset = page * PAGE_SIZE;
 
   const q = searchParams.get('q') ?? '';
   const sort = (searchParams.get('sort') ?? 'latest') as SortId;
@@ -65,7 +66,8 @@ function HomeContent() {
   );
 
   const handlePage = (newOffset: number) => {
-    setOffset(newOffset);
+    const newPage = Math.floor(newOffset / PAGE_SIZE);
+    setParam('page', newPage === 0 ? '' : String(newPage));
     window.scrollTo(0, 0);
   };
 
@@ -113,7 +115,7 @@ function HomeContent() {
           {threads.map((t, i) => (
             <ThreadCard
               key={t.id}
-              thread={t as Parameters<typeof ThreadCard>[0]['thread']}
+              thread={t as Thread}
               index={i}
               refetch={refetch}
             />
